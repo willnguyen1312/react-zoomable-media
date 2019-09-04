@@ -13,12 +13,19 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
+const Outer = styled.div`
+  width: 810px;
+  height: 450px;
+`;
+
 import { Zoomable } from '../.';
 
 const App = () => {
   return (
     <Wrapper>
-      <Zoomable />
+      <Outer>
+        <Zoomable />
+      </Outer>
     </Wrapper>
   );
 };
