@@ -124,7 +124,8 @@ export class Zoomable extends React.Component {
               width={imageWidth}
               height={imageHeight}
               ref={this.imageRef}
-              src="https://picsum.photos/id/1037/800/5000"
+              src="https://picsum.photos/id/1037/1024/768"
+              // src="https://picsum.photos/id/1037/800/5000"
               // src="https://picsum.photos/id/1037/800/5000"
             />
           </Slider>
