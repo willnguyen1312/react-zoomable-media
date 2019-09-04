@@ -15,7 +15,6 @@ const Wrapper = styled.div`
 
 const Outer = styled.div`
   width: 810px;
-  height: 450px;
 `;
 
 import { Zoomable } from '../.';

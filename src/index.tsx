@@ -1,41 +1,22 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Outer = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Wrapper = styled.div`
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
   overflow: hidden;
 `;
 
 const Slider = styled.div`
-  flex: 0 0 100%;
+  width: 100%;
   height: 100%;
   transition: transform 0.3s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
-const Image = styled.img`
+const Video = styled.video`
+  height: auto;
+  width: 100%;
   max-width: 100%;
-  max-height: 100%;
-  margin: auto;
 `;
-
-// const Video = styled.video`
-//   width: auto;
-//   height: auto;
-//   max-width: 100%;
-// `;
 
 export class Zoomable extends React.Component {
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -49,7 +30,7 @@ export class Zoomable extends React.Component {
     const wrapper = this.sliderRef.current as HTMLDivElement;
     const slider = this.sliderRef.current as HTMLDivElement;
     const factor = 0.1;
-    const max_scale = 4;
+    const max_scale = 10;
     const size = { w: slider.clientWidth, h: slider.clientHeight };
     const pos = { x: 0, y: 0 };
     const zoom_target = { x: 0, y: 0 };
@@ -90,13 +71,14 @@ export class Zoomable extends React.Component {
 
   render() {
     return (
-      <Outer>
-        <Wrapper ref={this.wrapperRef}>
-          <Slider ref={this.sliderRef}>
-            <Image src="https://picsum.photos/id/1037/1024/768" />
-          </Slider>
-        </Wrapper>
-      </Outer>
+      <Wrapper ref={this.wrapperRef}>
+        <Slider ref={this.sliderRef}>
+          <Video
+            controls
+            src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
+          />
+        </Slider>
+      </Wrapper>
     );
   }
 }
