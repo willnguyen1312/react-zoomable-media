@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Outer = styled.div`
+// function log(arg: any) {
+//   console.log(arg);
+// }
+
+const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -10,7 +14,7 @@ const Outer = styled.div`
   align-items: center;
 `;
 
-const Wrapper = styled.div`
+const Container = styled.div`
   max-width: 100%;
   max-height: 100%;
   overflow: hidden;
@@ -28,38 +32,60 @@ const Slider = styled.div`
 const Image = styled.img`
   max-width: 100%;
   max-height: 100%;
-  margin: auto;
 `;
-
-// const Video = styled.video`
-//   width: auto;
-//   height: auto;
-//   max-width: 100%;
-// `;
 
 export class Zoomable extends React.Component {
   wrapperRef = React.createRef<HTMLDivElement>();
+  imageRef = React.createRef<HTMLImageElement>();
   sliderRef = React.createRef<HTMLDivElement>();
 
+  state = {
+    imageHeight: 0,
+    imageWidth: 0,
+  };
+
   componentDidMount() {
+    const image = this.imageRef.current as HTMLImageElement;
+
+    image.onload = () => {
+      const { clientWidth, clientHeight } = this.wrapperRef
+        .current as HTMLDivElement;
+      const { naturalWidth, naturalHeight } = image;
+
+      const imageRatio = naturalWidth / naturalHeight;
+      const wrapperRatio = clientWidth / clientHeight;
+
+      let width: number;
+      let height: number;
+
+      if (imageRatio >= wrapperRatio) {
+        width = clientWidth;
+        height = width / imageRatio;
+      } else {
+        height = clientHeight;
+        width = height * imageRatio;
+      }
+
+      this.setState({ imageWidth: width, imageHeight: height });
+    };
+
     this.initZoom();
   }
 
   initZoom = () => {
-    const wrapper = this.sliderRef.current as HTMLDivElement;
     const slider = this.sliderRef.current as HTMLDivElement;
     const factor = 0.1;
     const max_scale = 4;
-    const size = { w: slider.clientWidth, h: slider.clientHeight };
     const pos = { x: 0, y: 0 };
     const zoom_target = { x: 0, y: 0 };
     const zoom_point = { x: 0, y: 0 };
     let scale = 1;
 
-    wrapper.style.transformOrigin = '0 0';
-    wrapper.addEventListener('wheel', event => {
-      zoom_point.x = event.pageX - wrapper.offsetLeft;
-      zoom_point.y = event.pageY - wrapper.offsetTop;
+    slider.style.transformOrigin = '0 0';
+    slider.addEventListener('wheel', event => {
+      const size = { w: slider.clientWidth, h: slider.clientHeight };
+      zoom_point.x = event.pageX - slider.offsetLeft;
+      zoom_point.y = event.pageY - slider.offsetTop;
 
       event.preventDefault();
 
@@ -89,14 +115,21 @@ export class Zoomable extends React.Component {
   };
 
   render() {
+    const { imageWidth, imageHeight } = this.state;
     return (
-      <Outer>
-        <Wrapper ref={this.wrapperRef}>
+      <Wrapper ref={this.wrapperRef}>
+        <Container>
           <Slider ref={this.sliderRef}>
-            <Image src="https://picsum.photos/id/1037/1024/768" />
+            <Image
+              width={imageWidth}
+              height={imageHeight}
+              ref={this.imageRef}
+              src="https://picsum.photos/id/1037/800/5000"
+              // src="https://picsum.photos/id/1037/800/5000"
+            />
           </Slider>
-        </Wrapper>
-      </Outer>
+        </Container>
+      </Wrapper>
     );
   }
 }
