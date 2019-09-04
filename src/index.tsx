@@ -1,6 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const Outer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 const Wrapper = styled.div`
   max-width: 100%;
   max-height: 100%;
@@ -9,6 +18,7 @@ const Wrapper = styled.div`
 
 const Slider = styled.div`
   flex: 0 0 100%;
+  height: 100%;
   transition: transform 0.3s;
   display: flex;
   justify-content: center;
@@ -80,11 +90,13 @@ export class Zoomable extends React.Component {
 
   render() {
     return (
-      <Wrapper ref={this.wrapperRef}>
-        <Slider ref={this.sliderRef}>
-          <Image src="https://picsum.photos/id/1037/2000/300" />
-        </Slider>
-      </Wrapper>
+      <Outer>
+        <Wrapper ref={this.wrapperRef}>
+          <Slider ref={this.sliderRef}>
+            <Image src="https://picsum.photos/id/1037/1024/768" />
+          </Slider>
+        </Wrapper>
+      </Outer>
     );
   }
 }
