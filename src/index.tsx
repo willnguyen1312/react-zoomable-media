@@ -6,6 +6,7 @@ import styled from 'styled-components';
 // }
 
 const Wrapper = styled.div`
+  background-color: #000;
   width: 100%;
   height: 100%;
   display: flex;
@@ -124,8 +125,8 @@ export class Zoomable extends React.Component {
               width={imageWidth}
               height={imageHeight}
               ref={this.imageRef}
-              src="https://picsum.photos/id/1037/1024/768"
-              // src="https://picsum.photos/id/1037/800/5000"
+              // src="https://picsum.photos/id/1037/1024/768"
+              src="https://picsum.photos/id/1037/5000/800"
               // src="https://picsum.photos/id/1037/800/5000"
             />
           </Slider>
