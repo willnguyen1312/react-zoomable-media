@@ -1,22 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
-
-const Wrapper = styled.div`
-  width: 100%;
-  overflow: hidden;
-`;
-
-const Slider = styled.div`
-  width: 100%;
-  height: 100%;
-  transition: transform 0.3s;
-`;
-
-const Video = styled.video`
-  height: auto;
-  width: 100%;
-  max-width: 100%;
-`;
 
 export class Zoomable extends React.Component {
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -71,15 +53,31 @@ export class Zoomable extends React.Component {
 
   render() {
     return (
-      <Wrapper ref={this.wrapperRef}>
-        <Slider ref={this.sliderRef}>
-          <Video
+      <div
+        style={{
+          width: '100%',
+          overflow: 'hidden',
+        }}
+        ref={this.wrapperRef}
+      >
+        <div
+          style={{
+            width: '100%',
+            transition: 'transform 0.3s',
+          }}
+          ref={this.sliderRef}
+        >
+          <video
+            style={{
+              height: 'auto',
+              width: '100%',
+            }}
             controls
-            src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
-            // src="http://127.0.0.1:8080/video.mp4"
+            // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
+            src="http://127.0.0.1:8080/video.mp4"
           />
-        </Slider>
-      </Wrapper>
+        </div>
+      </div>
     );
   }
 }
