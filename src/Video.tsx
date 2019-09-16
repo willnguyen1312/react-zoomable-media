@@ -3,67 +3,50 @@ import styled from 'styled-components';
 import { ZoomableContextType, withZoomableContext } from './zoomContext';
 
 const Wrapper = styled.div`
-  z-index: 1312;
-  background-color: #000;
   width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
 `;
 
 interface SliderProps {
-  width: number;
-  height: number;
   transform: string;
 }
 
 const Slider = styled.div<SliderProps>`
   transform-origin: 0 0;
-  cursor: move;
-  width: ${props => props.width}px;
-  height: ${props => props.height}px;
+  width: 100%;
   transform: ${props => props.transform};
 `;
 
 interface ImageProps {
-  imageUrl: string;
+  renderVideoWrapper: (
+    videoWrapperRef: React.RefObject<HTMLDivElement>
+  ) => React.ReactNode;
   zoomContext: ZoomableContextType;
 }
 
 export default withZoomableContext(
   class extends React.Component<ImageProps> {
-    state = { isLoading: true };
-
     componentDidMount() {
       const {
-        zoomContext: { imageRef, sliderRef, onImageLoad, onWheel },
+        zoomContext: { sliderRef, onWheel, onVideoLoad },
       } = this.props;
 
-      const image = imageRef.current as HTMLImageElement;
-      const slider = sliderRef.current as HTMLDivElement;
+      onVideoLoad();
 
-      image.onload = () => {
-        onImageLoad();
-        this.setState({ isLoading: false });
-      };
+      const slider = sliderRef.current as HTMLDivElement;
 
       slider.addEventListener('wheel', onWheel);
     }
 
     render() {
-      const { zoomContext, imageUrl } = this.props;
-      const { isLoading } = this.state;
+      const { zoomContext, renderVideoWrapper } = this.props;
       if (!zoomContext) {
         return null;
       }
 
       const {
-        width,
-        height,
-        imageRef,
         wrapperRef,
+        videoWrapperRef,
         currentZoom,
         sliderRef,
         handleMouseDown,
@@ -80,20 +63,10 @@ export default withZoomableContext(
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
-            width={width}
-            height={height}
             transform={`translate(${positionX}px, ${positionY}px) scale(${currentZoom})`}
           >
-            <img
-              style={{
-                width,
-                height,
-              }}
-              ref={imageRef}
-              src={imageUrl}
-            />
+            {renderVideoWrapper(videoWrapperRef)}
           </Slider>
-          {isLoading && <p>Loading...</p>}
         </Wrapper>
       );
     }

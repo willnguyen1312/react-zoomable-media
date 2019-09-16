@@ -19,7 +19,7 @@ const Outer = styled.div`
   height: 450px;
 `;
 
-import { Zoomable, ZoomableImage } from '../.';
+import { Zoomable, ZoomableVideo } from '../.';
 
 // const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
 const zoomImageUrl = 'https://picsum.photos/id/1037/1024/768';
@@ -36,7 +36,23 @@ const App = () => {
           wheelZoomRatio={0.1}
           zoomStep={10}
         >
-          <ZoomableImage imageUrl={zoomImageUrl} />
+          <ZoomableVideo
+            renderVideoWrapper={videoWrapperRef => {
+              return (
+                <div ref={videoWrapperRef}>
+                  <video
+                    style={{
+                      height: 'auto',
+                      width: '100%',
+                    }}
+                    controls
+                    // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
+                    src="http://127.0.0.1:8080/video.mp4"
+                  />
+                </div>
+              );
+            }}
+          />
         </Zoomable>
       </Outer>
     </Wrapper>

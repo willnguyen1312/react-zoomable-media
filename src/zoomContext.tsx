@@ -15,6 +15,7 @@ export interface ZoomableContextType {
   percentage: number;
   setPercentage: (newCurrentZoom: number) => void;
   onImageLoad: () => void;
+  onVideoLoad: () => void;
   zoom: (direction: ZOOM_DIRECTION) => () => void;
   onWheel: (event: WheelEvent) => void;
   handleMouseUp: () => void;
@@ -22,6 +23,7 @@ export interface ZoomableContextType {
   handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;
   wrapperRef: React.RefObject<HTMLDivElement>;
   imageRef: React.RefObject<HTMLImageElement>;
+  videoWrapperRef: React.RefObject<HTMLDivElement>;
   sliderRef: React.RefObject<HTMLDivElement>;
 }
 
