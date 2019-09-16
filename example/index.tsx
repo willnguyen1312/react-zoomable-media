@@ -19,7 +19,7 @@ const Outer = styled.div`
   height: 450px;
 `;
 
-import { Zoomable, ZoomableVideo } from '../.';
+import { Zoomable, ZoomableVideo, ZoomableImage } from '../.';
 
 // const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
 const zoomImageUrl = 'https://picsum.photos/id/1037/1024/768';
@@ -48,7 +48,7 @@ const App = () => {
           wheelZoomRatio={0.1}
           zoomStep={10}
         >
-          <ZoomableVideo>
+          {/* <ZoomableVideo>
             <video
               style={{
                 height: 'auto',
@@ -56,11 +56,13 @@ const App = () => {
               }}
               ref={videoRef}
               // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
-              src="http://127.0.0.1:8080/trip.mp4"
-            />{' '}
+              src="http://127.0.0.1:8080/video.mp4"
+            />
           </ZoomableVideo>
+          <button onClick={togglePlay}>{isPlay ? 'Pause' : 'Play'}</button> */}
+
+          <ZoomableImage imageUrl={zoomImageUrl} />
         </Zoomable>
-        <button onClick={togglePlay}>{isPlay ? 'Pause' : 'Play'}</button>
       </Outer>
     </Wrapper>
   );
