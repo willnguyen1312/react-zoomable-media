@@ -156,17 +156,13 @@ class Zoomable extends React.Component<ZoomableProps> {
 
   onVideoLoad = () => {
     const wrapper = this.wrapperRef.current as HTMLDivElement;
-
     const video = wrapper.querySelector('video') as HTMLVideoElement;
+    const { clientWidth, clientHeight } = video;
 
-    video.onloadeddata = () => {
-      const { clientWidth, clientHeight } = video;
-
-      this.setState({
-        width: clientWidth,
-        height: clientHeight,
-      });
-    };
+    this.setState({
+      width: clientWidth,
+      height: clientHeight,
+    });
   };
 
   handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {

@@ -13,6 +13,7 @@ interface SliderProps {
 
 const Slider = styled.div<SliderProps>`
   transform-origin: 0 0;
+  cursor: move;
   width: 100%;
   transform: ${props => props.transform};
 `;
@@ -25,10 +26,8 @@ export default withZoomableContext(
   class extends React.Component<ImageProps> {
     componentDidMount() {
       const {
-        zoomContext: { sliderRef, onWheel, onVideoLoad },
+        zoomContext: { sliderRef, onWheel },
       } = this.props;
-
-      onVideoLoad();
 
       const slider = sliderRef.current as HTMLDivElement;
 
