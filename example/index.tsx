@@ -19,13 +19,25 @@ const Outer = styled.div`
   height: 450px;
 `;
 
-import { Zoomable } from '../.';
+import Zoomable from '../.';
+
+// const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
+const zoomImageUrl = 'https://picsum.photos/id/1037/1024/768';
+// const zoomImageUrl = 'https://picsum.photos/id/1037/800/5000';
 
 const App = () => {
   return (
     <Wrapper>
       <Outer>
-        <Zoomable />
+        <Zoomable
+          enable={true}
+          maxZoom={4}
+          moveStep={50}
+          wheelZoomRatio={0.1}
+          zoomStep={10}
+        >
+          <Zoomable.View imageUrl={zoomImageUrl} />
+        </Zoomable>
       </Outer>
     </Wrapper>
   );
