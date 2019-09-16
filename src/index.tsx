@@ -1,31 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
 import clamp from 'lodash/clamp';
 
-const Wrapper = styled.div`
-  z-index: 1312;
-  background-color: #000;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-`;
-
-interface SliderProps {
-  width: number;
-  height: number;
-  transform: string;
-}
-
-const Slider = styled.div<SliderProps>`
-  transform-origin: 0 0;
-  cursor: move;
-  width: ${props => props.width}px;
-  height: ${props => props.height}px;
-  transform: ${props => props.transform};
-`;
+import Image from './Image';
+import { ZOOM_DIRECTION } from './constant';
+import { ZoomableProvider } from './zoomContext';
 
 interface ZoomableProps {
   enable: boolean;
@@ -35,126 +13,8 @@ interface ZoomableProps {
   moveStep: number;
 }
 
-interface ZoomableContextType {
-  height: number;
-  width: number;
-  currentZoom: number;
-  lastPositionX: number;
-  lastPositionY: number;
-  positionX: number;
-  positionY: number;
-  isOnMove: boolean;
-  startX: number;
-  startY: number;
-  percentage: number;
-  setPercentage: (newCurrentZoom: number) => void;
-  onImageLoad: () => void;
-  zoom: (direction: ZOOM_DIRECTION) => () => void;
-  onWheel: (event: WheelEvent) => void;
-  handleMouseUp: () => void;
-  handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
-  handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;
-  wrapperRef: React.RefObject<HTMLDivElement>;
-  imageRef: React.RefObject<HTMLImageElement>;
-  sliderRef: React.RefObject<HTMLDivElement>;
-}
-
-export enum ZOOM_DIRECTION {
-  IN = 'IN',
-  OUT = 'OUT',
-}
-
-const zoomableContext = React.createContext<ZoomableContextType | null>(null);
-
-const ZoomableProvider = zoomableContext.Provider;
-export const ZoomableConsumer = zoomableContext.Consumer;
-
-const withZoomableContext = <C extends React.ElementType>(component: C) => (
-  props: Omit<React.ComponentProps<C>, 'zoomContext'>
-) => {
-  const Component: any = component; // eslint-disable-line @typescript-eslint/no-explicit-any
-  return (
-    <ZoomableConsumer>
-      {zoomContext => <Component {...props} zoomContext={zoomContext} />}
-    </ZoomableConsumer>
-  );
-};
-
-interface ZoomableViewProps {
-  imageUrl: string;
-  zoomContext: ZoomableContextType;
-}
-
-const ZoomableImage = withZoomableContext(
-  class extends React.Component<ZoomableViewProps> {
-    state = { isLoading: true };
-
-    componentDidMount() {
-      const {
-        zoomContext: { imageRef, sliderRef, onImageLoad, onWheel },
-      } = this.props;
-
-      const image = imageRef.current as HTMLImageElement;
-      const slider = sliderRef.current as HTMLDivElement;
-
-      image.onload = () => {
-        onImageLoad();
-        this.setState({ isLoading: false });
-      };
-
-      slider.addEventListener('wheel', onWheel);
-    }
-
-    render() {
-      const { zoomContext, imageUrl } = this.props;
-      const { isLoading } = this.state;
-      if (!zoomContext) {
-        return null;
-      }
-
-      const {
-        width,
-        height,
-        imageRef,
-        wrapperRef,
-        currentZoom,
-        sliderRef,
-        handleMouseDown,
-        handleMouseMove,
-        handleMouseUp,
-        positionX,
-        positionY,
-      } = zoomContext;
-
-      return (
-        <Wrapper ref={wrapperRef}>
-          <Slider
-            ref={sliderRef}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            width={width}
-            height={height}
-            transform={`translate(${positionX}px, ${positionY}px) scale(${currentZoom})`}
-          >
-            <img
-              style={{
-                width,
-                height,
-              }}
-              ref={imageRef}
-              src={imageUrl}
-            />
-          </Slider>
-          {isLoading && <p>Loading...</p>}
-        </Wrapper>
-      );
-    }
-  }
-);
-
 class Zoomable extends React.Component<ZoomableProps> {
-  static Image: typeof ZoomableImage;
+  static Image: typeof Image;
   wrapperRef = React.createRef<HTMLDivElement>();
   imageRef = React.createRef<HTMLImageElement>();
   sliderRef = React.createRef<HTMLDivElement>();
@@ -451,6 +311,6 @@ class Zoomable extends React.Component<ZoomableProps> {
   }
 }
 
-Zoomable.Image = ZoomableImage;
+Zoomable.Image = Image;
 
 export default Zoomable;
