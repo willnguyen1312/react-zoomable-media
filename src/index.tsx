@@ -85,7 +85,7 @@ interface ZoomableViewProps {
   zoomContext: ZoomableContextType;
 }
 
-const ZoomableView = withZoomableContext(
+const ZoomableImage = withZoomableContext(
   class extends React.Component<ZoomableViewProps> {
     state = { isLoading: true };
 
@@ -154,7 +154,7 @@ const ZoomableView = withZoomableContext(
 );
 
 class Zoomable extends React.Component<ZoomableProps> {
-  static View: typeof ZoomableView;
+  static Image: typeof ZoomableImage;
   wrapperRef = React.createRef<HTMLDivElement>();
   imageRef = React.createRef<HTMLImageElement>();
   sliderRef = React.createRef<HTMLDivElement>();
@@ -451,6 +451,6 @@ class Zoomable extends React.Component<ZoomableProps> {
   }
 }
 
-Zoomable.View = ZoomableView;
+Zoomable.Image = ZoomableImage;
 
 export default Zoomable;

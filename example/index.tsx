@@ -36,7 +36,7 @@ const App = () => {
           wheelZoomRatio={0.1}
           zoomStep={10}
         >
-          <Zoomable.View imageUrl={zoomImageUrl} />
+          <Zoomable.Image imageUrl={zoomImageUrl} />
         </Zoomable>
       </Outer>
     </Wrapper>
