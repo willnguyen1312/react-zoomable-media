@@ -15,7 +15,6 @@ interface ZoomableProps {
 class Zoomable extends React.Component<ZoomableProps> {
   wrapperRef = React.createRef<HTMLDivElement>();
   imageRef = React.createRef<HTMLImageElement>();
-  videoWrapperRef = React.createRef<HTMLDivElement>();
   sliderRef = React.createRef<HTMLDivElement>();
 
   initialState = {
@@ -156,15 +155,18 @@ class Zoomable extends React.Component<ZoomableProps> {
   };
 
   onVideoLoad = () => {
-    const videoWrapper = this.videoWrapperRef.current as HTMLDivElement;
+    const wrapper = this.wrapperRef.current as HTMLDivElement;
 
-    const video = videoWrapper.querySelector('video') as HTMLVideoElement;
-    const { clientWidth, clientHeight } = video;
+    const video = wrapper.querySelector('video') as HTMLVideoElement;
 
-    this.setState({
-      width: clientWidth,
-      height: clientHeight,
-    });
+    video.onloadeddata = () => {
+      const { clientWidth, clientHeight } = video;
+
+      this.setState({
+        width: clientWidth,
+        height: clientHeight,
+      });
+    };
   };
 
   handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -311,7 +313,6 @@ class Zoomable extends React.Component<ZoomableProps> {
           onWheel: this.onWheel,
           wrapperRef: this.wrapperRef,
           imageRef: this.imageRef,
-          videoWrapperRef: this.videoWrapperRef,
           sliderRef: this.sliderRef,
           onImageLoad: this.onImageLoad,
           onVideoLoad: this.onVideoLoad,

@@ -23,7 +23,6 @@ export interface ZoomableContextType {
   handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;
   wrapperRef: React.RefObject<HTMLDivElement>;
   imageRef: React.RefObject<HTMLImageElement>;
-  videoWrapperRef: React.RefObject<HTMLDivElement>;
   sliderRef: React.RefObject<HTMLDivElement>;
 }
 

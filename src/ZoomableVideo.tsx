@@ -18,9 +18,6 @@ const Slider = styled.div<SliderProps>`
 `;
 
 interface ImageProps {
-  renderVideoWrapper: (
-    videoWrapperRef: React.RefObject<HTMLDivElement>
-  ) => React.ReactNode;
   zoomContext: ZoomableContextType;
 }
 
@@ -39,14 +36,13 @@ export default withZoomableContext(
     }
 
     render() {
-      const { zoomContext, renderVideoWrapper } = this.props;
+      const { zoomContext, children } = this.props;
       if (!zoomContext) {
         return null;
       }
 
       const {
         wrapperRef,
-        videoWrapperRef,
         currentZoom,
         sliderRef,
         handleMouseDown,
@@ -65,7 +61,7 @@ export default withZoomableContext(
             onMouseMove={handleMouseMove}
             transform={`translate(${positionX}px, ${positionY}px) scale(${currentZoom})`}
           >
-            {renderVideoWrapper(videoWrapperRef)}
+            {children}
           </Slider>
         </Wrapper>
       );

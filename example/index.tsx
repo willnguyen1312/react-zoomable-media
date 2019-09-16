@@ -48,21 +48,17 @@ const App = () => {
           wheelZoomRatio={0.1}
           zoomStep={10}
         >
-          <ZoomableVideo
-            renderVideoWrapper={videoWrapperRef => {
-              return (
-                <video
-                  style={{
-                    height: 'auto',
-                    width: '100%',
-                  }}
-                  ref={videoRef}
-                  // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
-                  src="http://127.0.0.1:8080/video.mp4"
-                />
-              );
-            }}
-          />
+          <ZoomableVideo>
+            <video
+              style={{
+                height: 'auto',
+                width: '100%',
+              }}
+              ref={videoRef}
+              // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
+              src="http://127.0.0.1:8080/trip.mp4"
+            />{' '}
+          </ZoomableVideo>
         </Zoomable>
         <button onClick={togglePlay}>{isPlay ? 'Pause' : 'Play'}</button>
       </Outer>
