@@ -2,7 +2,7 @@ import React from 'react';
 import clamp from 'lodash/clamp';
 
 import { ZOOM_DIRECTION } from './constant';
-import { ZoomableProvider } from './zoomContext';
+import { ZoomableProvider } from './ZoomContext';
 
 interface ZoomableProps {
   enable: boolean;
