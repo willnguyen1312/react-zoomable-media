@@ -1,5 +1,4 @@
 import React from 'react';
-import { ZOOM_DIRECTION } from './constant';
 
 export interface ZoomableContextType {
   height: number;
@@ -16,7 +15,8 @@ export interface ZoomableContextType {
   setPercentage: (newCurrentZoom: number) => void;
   onImageLoad: () => void;
   onVideoLoad: () => void;
-  zoom: (direction: ZOOM_DIRECTION) => () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
   onWheel: (event: WheelEvent) => void;
   handleMouseUp: () => void;
   handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;

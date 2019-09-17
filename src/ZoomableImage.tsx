@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ZoomableContextType, withZoomableContext } from './ZoomContext';
+import { ZoomableContextType, withZoomableContext } from './ZoomableContext';
 
 const Wrapper = styled.div`
   z-index: 1312;

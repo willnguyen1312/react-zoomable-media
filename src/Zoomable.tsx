@@ -1,8 +1,7 @@
 import React from 'react';
 import clamp from 'lodash/clamp';
 
-import { ZOOM_DIRECTION } from './constant';
-import { ZoomableProvider } from './ZoomContext';
+import { ZoomableProvider } from './ZoomableContext';
 
 interface ZoomableProps {
   enable: boolean;
@@ -265,16 +264,15 @@ class Zoomable extends React.Component<ZoomableProps> {
     });
   };
 
-  zoom = (direction: ZOOM_DIRECTION) => () => {
-    const { zoomStep } = this.props;
-    const { percentage } = this.state;
-    const newPercentage = {
-      [ZOOM_DIRECTION.IN]: Math.min(percentage + zoomStep, 100),
-      [ZOOM_DIRECTION.OUT]: Math.max(0, percentage - zoomStep),
-    }[direction];
+  zoomIn = () =>
+    this.setPercentage(
+      Math.min(this.state.percentage + this.props.zoomStep, 100)
+    );
 
-    this.setPercentage(newPercentage);
-  };
+  zoomOut = () =>
+    this.setPercentage(
+      Math.max(0, this.state.percentage - this.props.zoomStep)
+    );
 
   handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -312,7 +310,8 @@ class Zoomable extends React.Component<ZoomableProps> {
           sliderRef: this.sliderRef,
           onImageLoad: this.onImageLoad,
           onVideoLoad: this.onVideoLoad,
-          zoom: this.zoom,
+          zoomIn: this.zoomIn,
+          zoomOut: this.zoomOut,
         }}
       >
         {children}
