@@ -1,16 +1,18 @@
 {
   "name": "react-zoomable-media",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "module": "dist/react-zoomable-media.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "author": "Nam Nguyen <nam.nguyen.node@gmail.com",
   "scripts": {
     "setup": "yarn && cd example && yarn",
     "start": "tsdx watch",
     "build": "tsdx build",
+    "build:demo": "yarn build && cd example && yarn && yarn build",
     "test": "tsdx test --env=jsdom",
     "lint": "tsdx lint",
     "local": "live-server --no-browser local",
@@ -53,5 +55,16 @@
     "lodash": "^4.17.15",
     "lodash-es": "^4.17.15",
     "styled-components": "^4.3.2"
-  }
+  },
+  "tags": [
+    "react",
+    "zoomable image",
+    "zoomable video"
+  ],
+  "keywords": [
+    "react",
+    "react-component",
+    "zoomable image",
+    "zoomable video"
+  ]
 }
