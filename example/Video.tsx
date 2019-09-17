@@ -59,8 +59,8 @@ const VideoApp = withZoomableContext((props: AppProps) => {
               width: '100%',
             }}
             ref={videoRef}
-            // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
-            src="http://127.0.0.1:8080/video.mp4"
+            src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
+            // src="http://127.0.0.1:8080/video.mp4"
           />
         </ZoomableVideo>
         <button onClick={togglePlay}>{isPlay ? 'Pause' : 'Play'}</button>

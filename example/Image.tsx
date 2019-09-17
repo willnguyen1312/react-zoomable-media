@@ -21,7 +21,7 @@ const Outer = styled.div`
 `;
 
 // const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
-const zoomImageUrl = 'https://picsum.photos/id/1022/1024/768';
+const zoomImageUrl = 'https://picsum.photos/id/1022/1920/1080';
 // const zoomImageUrl = 'https://picsum.photos/id/1037/800/5000';
 
 const Loading = () => <h1>Have fun at load!!!</h1>;
