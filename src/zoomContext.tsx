@@ -1,5 +1,5 @@
 import React from 'react';
-import { ZOOM_DIRECTION } from 'constant';
+import { ZOOM_DIRECTION } from './constant';
 
 export interface ZoomableContextType {
   height: number;
