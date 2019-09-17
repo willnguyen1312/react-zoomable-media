@@ -12,7 +12,6 @@
     "setup": "yarn && cd example && yarn",
     "start": "tsdx watch",
     "build": "tsdx build",
-    "build:demo": "yarn build && cd example && yarn && yarn build",
     "test": "tsdx test --env=jsdom",
     "lint": "tsdx lint",
     "local": "live-server --no-browser local",
