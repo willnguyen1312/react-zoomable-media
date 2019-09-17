@@ -21,8 +21,10 @@ const Outer = styled.div`
 `;
 
 // const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
-const zoomImageUrl = 'https://picsum.photos/id/1037/1024/768';
+const zoomImageUrl = 'https://picsum.photos/id/1022/1024/768';
 // const zoomImageUrl = 'https://picsum.photos/id/1037/800/5000';
+
+const Loading = () => <h1>Have fun at load!!!</h1>;
 
 const ImageApp = () => {
   return (
@@ -35,7 +37,7 @@ const ImageApp = () => {
           wheelZoomRatio={0.1}
           zoomStep={10}
         >
-          <ZoomableImage imageUrl={zoomImageUrl} />
+          <ZoomableImage loading={<Loading />} imageUrl={zoomImageUrl} />
         </Zoomable>
       </Outer>
     </Wrapper>

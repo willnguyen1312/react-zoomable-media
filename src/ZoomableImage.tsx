@@ -29,6 +29,7 @@ const Slider = styled.div<SliderProps>`
 
 interface ImageProps {
   imageUrl: string;
+  loading: React.ReactNode;
   zoomContext: ZoomableContextType;
 }
 
@@ -53,11 +54,13 @@ export default withZoomableContext(
     }
 
     render() {
-      const { zoomContext, imageUrl } = this.props;
+      const { zoomContext, imageUrl, loading } = this.props;
       const { isLoading } = this.state;
       if (!zoomContext) {
         return null;
       }
+
+      const renderedLoading = loading ? loading : <p>loading...</p>;
 
       const {
         width,
@@ -93,7 +96,7 @@ export default withZoomableContext(
               src={imageUrl}
             />
           </Slider>
-          {isLoading && <p>Loading...</p>}
+          {isLoading && renderedLoading}
         </Wrapper>
       );
     }
