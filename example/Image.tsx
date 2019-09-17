@@ -1,24 +1,5 @@
-import 'react-app-polyfill/ie11';
-import 'flexibility';
 import React, { useRef, useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import styled from 'styled-components';
 import { Zoomable, ZoomableImage } from '../.';
-
-const Wrapper = styled.div`
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Outer = styled.div`
-  width: 810px;
-  height: 450px;
-`;
 
 // const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
 const zoomImageUrl = 'https://picsum.photos/id/1022/1920/1080';
@@ -28,8 +9,18 @@ const Loading = () => <h1>Have fun at load!!!</h1>;
 
 const ImageApp = () => {
   return (
-    <Wrapper>
-      <Outer>
+    <div
+      style={{
+        height: '100vh',
+        width: '100vw',
+        margin: 0,
+        padding: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ width: 810, height: 450 }}>
         <Zoomable
           enable={true}
           maxZoom={4}
@@ -39,8 +30,8 @@ const ImageApp = () => {
         >
           <ZoomableImage loading={<Loading />} imageUrl={zoomImageUrl} />
         </Zoomable>
-      </Outer>
-    </Wrapper>
+      </div>
+    </div>
   );
 };
 

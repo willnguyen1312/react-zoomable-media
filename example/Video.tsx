@@ -1,27 +1,9 @@
-import 'react-app-polyfill/ie11';
-import 'flexibility';
 import React, { useRef, useState, useEffect } from 'react';
-import styled from 'styled-components';
 import {
   ZoomableVideo,
   withZoomableContext,
   ZoomableContextType,
 } from '../dist';
-
-const Wrapper = styled.div`
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Outer = styled.div`
-  width: 810px;
-  height: 450px;
-`;
 
 interface AppProps {
   zoomContext: ZoomableContextType;
@@ -50,8 +32,18 @@ const VideoApp = withZoomableContext((props: AppProps) => {
   });
 
   return (
-    <Wrapper>
-      <Outer>
+    <div
+      style={{
+        height: '100vh',
+        width: '100vw',
+        margin: 0,
+        padding: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ width: 810, height: 450 }}>
         <ZoomableVideo>
           <video
             style={{
@@ -64,8 +56,8 @@ const VideoApp = withZoomableContext((props: AppProps) => {
           />
         </ZoomableVideo>
         <button onClick={togglePlay}>{isPlay ? 'Pause' : 'Play'}</button>
-      </Outer>
-    </Wrapper>
+      </div>
+    </div>
   );
 });
 

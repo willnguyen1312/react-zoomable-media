@@ -1,7 +1,9 @@
 import React from 'react';
-import clamp from 'lodash/clamp';
 
 import { ZoomableProvider } from './ZoomableContext';
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 interface ZoomableProps {
   enable: boolean;

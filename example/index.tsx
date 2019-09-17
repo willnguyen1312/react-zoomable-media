@@ -2,17 +2,10 @@ import 'react-app-polyfill/ie11';
 import 'flexibility';
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import styled from 'styled-components';
 
 import Video from './Video';
 import Image from './Image';
 import { Zoomable } from '../dist';
-
-const Nav = styled.nav`
-  position: fixed;
-  top: 10px;
-  left: 10px;
-`;
 
 const App = () => {
   const [isVideo, setIsVideo] = useState(false);
@@ -21,10 +14,16 @@ const App = () => {
 
   return (
     <>
-      <Nav>
+      <nav
+        style={{
+          position: 'fixed',
+          top: 10,
+          left: 10,
+        }}
+      >
         <button onClick={toggleSelectVideo}>Image</button>
         <button onClick={toggleSelectVideo}>Video</button>
-      </Nav>
+      </nav>
       {isVideo ? (
         <Zoomable
           enable={true}

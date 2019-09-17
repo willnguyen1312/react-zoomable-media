@@ -50,11 +50,6 @@
     "tslib": "^1.10.0",
     "typescript": "^3.6.3"
   },
-  "dependencies": {
-    "lodash": "^4.17.15",
-    "lodash-es": "^4.17.15",
-    "styled-components": "^4.3.2"
-  },
   "tags": [
     "react",
     "zoomable image",

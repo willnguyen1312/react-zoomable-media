@@ -1,31 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
 import { ZoomableContextType, withZoomableContext } from './ZoomableContext';
-
-const Wrapper = styled.div`
-  z-index: 1312;
-  background-color: #000;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-`;
-
-interface SliderProps {
-  width: number;
-  height: number;
-  transform: string;
-}
-
-const Slider = styled.div<SliderProps>`
-  transform-origin: 0 0;
-  cursor: move;
-  width: ${props => props.width}px;
-  height: ${props => props.height}px;
-  transform: ${props => props.transform};
-`;
 
 interface ImageProps {
   imageUrl: string;
@@ -77,15 +51,31 @@ export default withZoomableContext(
       } = zoomContext;
 
       return (
-        <Wrapper ref={wrapperRef}>
-          <Slider
+        <div
+          style={{
+            zIndex: 1312,
+            backgroundColor: '#000',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+          }}
+          ref={wrapperRef}
+        >
+          <div
             ref={sliderRef}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
-            width={width}
-            height={height}
-            transform={`translate(${positionX}px, ${positionY}px) scale(${currentZoom})`}
+            style={{
+              transformOrigin: '0 0',
+              cursor: 'move',
+              width,
+              height,
+              transform: `translate(${positionX}px, ${positionY}px) scale(${currentZoom})`,
+            }}
           >
             <img
               style={{
@@ -95,9 +85,9 @@ export default withZoomableContext(
               ref={imageRef}
               src={imageUrl}
             />
-          </Slider>
+          </div>
           {isLoading && renderedLoading}
-        </Wrapper>
+        </div>
       );
     }
   }
