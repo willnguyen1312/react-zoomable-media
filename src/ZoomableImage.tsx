@@ -1,94 +1,78 @@
-import React from 'react';
-import { ZoomableContextType, withZoomableContext } from './ZoomableContext';
+import React, { useState, useEffect, useContext } from 'react';
+import { ZoomableContextType, zoomableContext } from './ZoomableContext';
 
 interface ImageProps {
   imageUrl: string;
-  loading: React.ReactNode;
-  zoomContext: ZoomableContextType;
+  loading?: React.ReactNode;
 }
 
-export default withZoomableContext(
-  class extends React.Component<ImageProps> {
-    state = { isLoading: true };
+export default function({ imageUrl, loading }: ImageProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {
+    onImageLoad,
+    onWheel,
+    width,
+    height,
+    imageRef,
+    wrapperRef,
+    currentZoom,
+    sliderRef,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    positionX,
+    positionY,
+  } = useContext(zoomableContext) as ZoomableContextType;
 
-    componentDidMount() {
-      const {
-        zoomContext: { imageRef, sliderRef, onImageLoad, onWheel },
-      } = this.props;
+  const handleOnImageLoad = () => {
+    onImageLoad();
+    setIsLoading(true);
+  };
 
-      const image = imageRef.current as HTMLImageElement;
-      const slider = sliderRef.current as HTMLDivElement;
+  useEffect(() => {
+    const slider = sliderRef.current as HTMLDivElement;
+    slider.addEventListener('wheel', event => event.preventDefault());
+  }, []);
 
-      image.onload = () => {
-        onImageLoad();
-        this.setState({ isLoading: false });
-      };
-
-      slider.addEventListener('wheel', onWheel);
-    }
-
-    render() {
-      const { zoomContext, imageUrl, loading } = this.props;
-      const { isLoading } = this.state;
-      if (!zoomContext) {
-        return null;
-      }
-
-      const renderedLoading = loading ? loading : <p>loading...</p>;
-
-      const {
-        width,
-        height,
-        imageRef,
-        wrapperRef,
-        currentZoom,
-        sliderRef,
-        handleMouseDown,
-        handleMouseMove,
-        handleMouseUp,
-        positionX,
-        positionY,
-      } = zoomContext;
-
-      return (
-        <div
+  return (
+    <div
+      style={{
+        zIndex: 1312,
+        backgroundColor: '#000',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
+      }}
+      ref={wrapperRef}
+    >
+      <div
+        ref={sliderRef}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onWheel={onWheel}
+        style={{
+          transformOrigin: '0 0',
+          cursor: 'move',
+          width,
+          height,
+          transform: `translate(${positionX}px, ${positionY}px) scale(${currentZoom})`,
+        }}
+      >
+        <img
+          onLoad={handleOnImageLoad}
           style={{
-            zIndex: 1312,
-            backgroundColor: '#000',
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            overflow: 'hidden',
+            width,
+            height,
           }}
-          ref={wrapperRef}
-        >
-          <div
-            ref={sliderRef}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            style={{
-              transformOrigin: '0 0',
-              cursor: 'move',
-              width,
-              height,
-              transform: `translate(${positionX}px, ${positionY}px) scale(${currentZoom})`,
-            }}
-          >
-            <img
-              style={{
-                width,
-                height,
-              }}
-              ref={imageRef}
-              src={imageUrl}
-            />
-          </div>
-          {isLoading && renderedLoading}
-        </div>
-      );
-    }
-  }
-);
+          ref={imageRef}
+          src={imageUrl}
+        />
+      </div>
+      {isLoading && loading}
+    </div>
+  );
+}

@@ -12,21 +12,23 @@ export interface ZoomableContextType {
   startX: number;
   startY: number;
   percentage: number;
-  setPercentage: (newCurrentZoom: number) => void;
+  updatePercentage: (newCurrentZoom: number) => void;
   onImageLoad: () => void;
   onVideoLoad: () => void;
   zoomIn: () => void;
   zoomOut: () => void;
-  onWheel: (event: WheelEvent) => void;
+  onWheel: (event: React.WheelEvent<HTMLDivElement>) => void;
   handleMouseUp: () => void;
   handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
   handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;
-  wrapperRef: React.RefObject<HTMLDivElement>;
-  imageRef: React.RefObject<HTMLImageElement>;
-  sliderRef: React.RefObject<HTMLDivElement>;
+  wrapperRef: React.MutableRefObject<HTMLDivElement>;
+  imageRef: React.MutableRefObject<HTMLImageElement>;
+  sliderRef: React.MutableRefObject<HTMLDivElement>;
 }
 
-const zoomableContext = React.createContext<ZoomableContextType | null>(null);
+export const zoomableContext = React.createContext<ZoomableContextType | null>(
+  null
+);
 
 export const ZoomableProvider = zoomableContext.Provider;
 export const ZoomableConsumer = zoomableContext.Consumer;
