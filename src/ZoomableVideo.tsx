@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
-import { ZoomableContextType, withZoomableContext } from './ZoomableContext';
+import React, { useEffect, useContext } from 'react';
+import { ZoomableContextType, zoomableContext } from './ZoomableContext';
 
-interface ImageProps {
-  zoomContext: ZoomableContextType;
+interface VideoProps {
   children: React.ReactNode;
 }
 
-export default withZoomableContext(({ zoomContext, children }: ImageProps) => {
+export default function({ children }: VideoProps) {
   const {
     wrapperRef,
     currentZoom,
@@ -17,7 +16,7 @@ export default withZoomableContext(({ zoomContext, children }: ImageProps) => {
     positionX,
     positionY,
     onWheel,
-  } = zoomContext;
+  } = useContext(zoomableContext) as ZoomableContextType;
 
   useEffect(() => {
     const slider = sliderRef.current as HTMLDivElement;
@@ -43,4 +42,4 @@ export default withZoomableContext(({ zoomContext, children }: ImageProps) => {
       </div>
     </div>
   );
-});
+}

@@ -21,12 +21,14 @@ export interface ZoomableContextType {
   handleMouseUp: () => void;
   handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
   handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;
-  wrapperRef: React.RefObject<HTMLDivElement>;
-  imageRef: React.RefObject<HTMLImageElement>;
-  sliderRef: React.RefObject<HTMLDivElement>;
+  wrapperRef: React.MutableRefObject<HTMLDivElement>;
+  imageRef: React.MutableRefObject<HTMLImageElement>;
+  sliderRef: React.MutableRefObject<HTMLDivElement>;
 }
 
-const zoomableContext = React.createContext<ZoomableContextType | null>(null);
+export const zoomableContext = React.createContext<ZoomableContextType | null>(
+  null
+);
 
 export const ZoomableProvider = zoomableContext.Provider;
 export const ZoomableConsumer = zoomableContext.Consumer;
