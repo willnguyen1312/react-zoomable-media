@@ -24,7 +24,10 @@
     "lint": "tsdx lint",
     "local": "live-server --no-browser local",
     "demo": "cd example && yarn start",
-    "dev": "npm-run-all -p start demo local"
+    "build:demo": "cd example && yarn build",
+    "dev": "npm-run-all -p start demo local",
+    "publish": "netlify deploy --prod --dir=./example/dist",
+    "publish:demo": "npm-run-all -s build build:demo publish"
   },
   "peerDependencies": {
     "react": ">=16"
