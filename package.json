@@ -7,6 +7,14 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willnguyen1312/react-zoomable-media"
+  },
+  "homepage": "https://github.com/willnguyen1312/react-zoomable-media",
+  "bugs": {
+    "url": "https://github.com/willnguyen1312/react-zoomable-media/issues"
+  },
   "author": "Nam Nguyen <nam.nguyen.node@gmail.com",
   "scripts": {
     "setup": "yarn && cd example && yarn",
