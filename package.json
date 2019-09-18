@@ -1,6 +1,6 @@
 {
   "name": "react-zoomable-media",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "module": "dist/react-zoomable-media.esm.js",
   "typings": "dist/index.d.ts",
