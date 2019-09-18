@@ -21,7 +21,7 @@ export default function({ children }: VideoProps) {
   useEffect(() => {
     const slider = sliderRef.current as HTMLDivElement;
 
-    slider.addEventListener('wheel', onWheel);
+    slider.addEventListener('wheel', event => event.preventDefault());
   }, []);
 
   return (
@@ -31,6 +31,7 @@ export default function({ children }: VideoProps) {
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
+        onWheel={onWheel}
         style={{
           transformOrigin: '0 0',
           cursor: 'move',

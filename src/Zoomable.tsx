@@ -6,32 +6,14 @@ const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
 interface ZoomableProps {
-  enable: boolean;
   maxZoom: number;
   wheelZoomRatio: number;
   zoomStep: number;
   moveStep: number;
 }
 
-const initialState = {
-  height: 0,
-  width: 0,
-  currentZoom: 1,
-  percentage: 0,
-  lastPositionX: 0,
-  lastPositionY: 0,
-  positionX: 0,
-  positionY: 0,
-  isOnMove: false,
-  startX: 0,
-  startY: 0,
-};
-
-type PartialState = Partial<typeof initialState>;
-
 const Zoomable: FC<ZoomableProps> = ({
   children,
-  enable,
   moveStep,
   maxZoom,
   wheelZoomRatio,
@@ -47,7 +29,17 @@ const Zoomable: FC<ZoomableProps> = ({
     HTMLImageElement
   >;
 
-  const [state, setState] = useState(initialState);
+  const [width, setWidth] = useState<number>(0);
+  const [height, setHeight] = useState<number>(0);
+  const [currentZoom, setCurrentZoom] = useState<number>(1);
+  const [percentage, setPercentage] = useState<number>(0);
+  const [lastPositionX, setLastPositionX] = useState<number>(0);
+  const [lastPositionY, setLastPositionY] = useState<number>(0);
+  const [positionX, setPositionX] = useState<number>(0);
+  const [positionY, setPositionY] = useState<number>(0);
+  const [startX, setStartX] = useState<number>(0);
+  const [startY, setStartY] = useState<number>(0);
+  const [isOnMove, setIsOnMove] = useState<boolean>(false);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeydown);
@@ -59,12 +51,7 @@ const Zoomable: FC<ZoomableProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    updateState(initialState);
-  }, [enable]);
-
   const calculatePositionX = (newPositionX: number, currentZoom: number) => {
-    const { width } = state;
     if (newPositionX > 0) return 0;
     if (newPositionX + width * currentZoom < width)
       return -width * (currentZoom - 1);
@@ -72,41 +59,25 @@ const Zoomable: FC<ZoomableProps> = ({
   };
 
   const calculatePositionY = (newPositionY: number, currentZoom: number) => {
-    const { height } = state;
     if (newPositionY > 0) return 0;
     if (newPositionY + height * currentZoom < height)
       return -height * (currentZoom - 1);
     return newPositionY;
   };
 
-  const updateState = (partialState: PartialState) =>
-    setState(prevState => ({
-      ...prevState,
-      ...partialState,
-    }));
-
   const handleKeydown = (event: KeyboardEvent) => {
-    const { positionX, positionY, currentZoom } = state;
     const handlers: Record<string, () => void> = {
       ArrowUp: () => {
-        updateState({
-          positionY: calculatePositionY(positionY + moveStep, currentZoom),
-        });
+        setPositionY(calculatePositionY(positionY + moveStep, currentZoom));
       },
       ArrowDown: () => {
-        updateState({
-          positionY: calculatePositionY(positionY - moveStep, currentZoom),
-        });
+        setPositionY(calculatePositionY(positionY - moveStep, currentZoom));
       },
       ArrowRight: () => {
-        updateState({
-          positionX: calculatePositionX(positionX - moveStep, currentZoom),
-        });
+        setPositionX(calculatePositionX(positionX - moveStep, currentZoom));
       },
       ArrowLeft: () => {
-        updateState({
-          positionX: calculatePositionX(positionX + moveStep, currentZoom),
-        });
+        setPositionX(calculatePositionX(positionX + moveStep, currentZoom));
       },
     };
 
@@ -119,7 +90,7 @@ const Zoomable: FC<ZoomableProps> = ({
   };
 
   const handleMouseMoveOutOfBound = (event: MouseEvent) => {
-    if (state.isOnMove) {
+    if (isOnMove) {
       event.preventDefault();
       const wrapper = wrapperRef.current as HTMLDivElement;
       const wrapperRect = wrapper.getBoundingClientRect();
@@ -131,7 +102,7 @@ const Zoomable: FC<ZoomableProps> = ({
         y > wrapper.clientHeight ||
         y < 0
       ) {
-        updateState({ isOnMove: false });
+        setIsOnMove(false);
       }
     }
   };
@@ -160,15 +131,15 @@ const Zoomable: FC<ZoomableProps> = ({
     const wrapperRatio = clientWidth / clientHeight;
 
     if (imageRatio >= wrapperRatio) {
-      updateState({
-        width: clientWidth,
-        height: clientWidth / imageRatio,
-      });
+      const width = clientWidth;
+      const height = clientWidth / imageRatio;
+      setWidth(width);
+      setHeight(height);
     } else {
-      updateState({
-        width: clientHeight * imageRatio,
-        height: clientHeight,
-      });
+      const width = clientHeight * imageRatio;
+      const height = clientHeight;
+      setWidth(width);
+      setHeight(height);
     }
   };
 
@@ -177,36 +148,24 @@ const Zoomable: FC<ZoomableProps> = ({
     const video = wrapper.querySelector('video') as HTMLVideoElement;
     const { clientWidth, clientHeight } = video;
 
-    updateState({
-      width: clientWidth,
-      height: clientHeight,
-    });
+    setWidth(clientWidth);
+    setHeight(clientHeight);
   };
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (state.isOnMove) {
+    if (isOnMove) {
       event.preventDefault();
-      const {
-        startX,
-        startY,
-        lastPositionX,
-        lastPositionY,
-        currentZoom,
-      } = state;
       const { pageX, pageY } = event;
       const offsetX = pageX - startX;
       const offsetY = pageY - startY;
 
-      updateState({
-        positionX: calculatePositionX(lastPositionX + offsetX, currentZoom),
-        positionY: calculatePositionY(lastPositionY + offsetY, currentZoom),
-      });
+      setPositionX(calculatePositionX(lastPositionX + offsetX, currentZoom));
+      setPositionY(calculatePositionY(lastPositionY + offsetY, currentZoom));
     }
   };
 
-  const onWheel = (event: WheelEvent) => {
+  const onWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     event.preventDefault();
-    const { currentZoom, positionX, positionY, width, height } = state;
 
     const wrapper = wrapperRef.current as HTMLDivElement;
     const wrapperRect = wrapper.getBoundingClientRect();
@@ -235,22 +194,23 @@ const Zoomable: FC<ZoomableProps> = ({
     );
     const newPercentage = calculatePercentage(newCurrentZoom);
 
-    updateState({
-      positionX: calculatePositionX(
+    setPositionX(
+      calculatePositionX(
         -zoomTargetX * newCurrentZoom + zoomPointX,
         newCurrentZoom
-      ),
-      positionY: calculatePositionY(
+      )
+    );
+    setPositionY(
+      calculatePositionY(
         -zoomTargetY * newCurrentZoom + zoomPointY,
         newCurrentZoom
-      ),
-      currentZoom: newCurrentZoom,
-      percentage: newPercentage,
-    });
+      )
+    );
+    setCurrentZoom(newCurrentZoom);
+    setPercentage(newPercentage);
   };
 
-  const setPercentage = (newPercentage: number) => {
-    const { width, height, positionX, positionY, currentZoom } = state;
+  const updatePercentage = (newPercentage: number) => {
     const newCurrentZoom = calculateCurrentZoom(newPercentage);
 
     const zoomPointX = width / 2;
@@ -259,64 +219,65 @@ const Zoomable: FC<ZoomableProps> = ({
     const zoomTargetX = (width / 2 - positionX) / currentZoom;
     const zoomTargetY = (height / 2 - positionY) / currentZoom;
 
-    const newPositionX = calculatePositionX(
-      -zoomTargetX * newCurrentZoom + zoomPointX,
-      newCurrentZoom
+    setPercentage(newPercentage);
+    setPositionX(
+      calculatePositionX(
+        -zoomTargetX * newCurrentZoom + zoomPointX,
+        newCurrentZoom
+      )
     );
-    const newPositionY = calculatePositionY(
-      -zoomTargetY * newCurrentZoom + zoomPointY,
-      newCurrentZoom
+    setPositionY(
+      calculatePositionY(
+        -zoomTargetY * newCurrentZoom + zoomPointY,
+        newCurrentZoom
+      )
     );
-
-    updateState({
-      percentage: newPercentage,
-      positionX: newPositionX,
-      positionY: newPositionY,
-      currentZoom: newCurrentZoom,
-    });
+    setCurrentZoom(newCurrentZoom);
   };
 
-  const zoomIn = () =>
-    setPercentage(Math.min(state.percentage + zoomStep, 100));
+  const zoomIn = () => setPercentage(Math.min(percentage + zoomStep, 100));
 
-  const zoomOut = () => setPercentage(Math.max(0, state.percentage - zoomStep));
+  const zoomOut = () => setPercentage(Math.max(0, percentage - zoomStep));
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     const { pageX, pageY } = event;
-    const { positionX, positionY } = state;
 
-    updateState({
-      lastPositionX: positionX,
-      lastPositionY: positionY,
-      startX: pageX,
-      startY: pageY,
-      isOnMove: true,
-    });
+    setLastPositionX(positionX);
+    setLastPositionY(positionY);
+    setStartX(pageX);
+    setStartY(pageY);
+    setIsOnMove(true);
   };
 
-  const handleMouseUp = () => {
-    updateState({
-      isOnMove: false,
-    });
-  };
+  const handleMouseUp = () => setIsOnMove(false);
 
   return (
     <ZoomableProvider
       value={{
-        ...state,
-        handleMouseUp: handleMouseUp,
-        setPercentage: setPercentage,
-        handleMouseDown: handleMouseDown,
-        handleMouseMove: handleMouseMove,
-        onWheel: onWheel,
-        wrapperRef: wrapperRef,
-        imageRef: imageRef,
-        sliderRef: sliderRef,
-        onImageLoad: onImageLoad,
-        onVideoLoad: onVideoLoad,
-        zoomIn: zoomIn,
-        zoomOut: zoomOut,
+        width,
+        height,
+        handleMouseUp,
+        updatePercentage,
+        handleMouseDown,
+        handleMouseMove,
+        onWheel,
+        wrapperRef,
+        imageRef,
+        sliderRef,
+        onImageLoad,
+        onVideoLoad,
+        zoomIn,
+        zoomOut,
+        currentZoom,
+        isOnMove,
+        lastPositionX,
+        lastPositionY,
+        percentage,
+        positionX,
+        positionY,
+        startX,
+        startY,
       }}
     >
       {children}

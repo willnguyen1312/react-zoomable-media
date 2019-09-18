@@ -12,12 +12,12 @@ export interface ZoomableContextType {
   startX: number;
   startY: number;
   percentage: number;
-  setPercentage: (newCurrentZoom: number) => void;
+  updatePercentage: (newCurrentZoom: number) => void;
   onImageLoad: () => void;
   onVideoLoad: () => void;
   zoomIn: () => void;
   zoomOut: () => void;
-  onWheel: (event: WheelEvent) => void;
+  onWheel: (event: React.WheelEvent<HTMLDivElement>) => void;
   handleMouseUp: () => void;
   handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
   handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;

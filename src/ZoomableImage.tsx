@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ZoomableContextType, zoomableContext } from './ZoomableContext';
 
 interface ImageProps {
@@ -24,16 +24,14 @@ export default function({ imageUrl, loading }: ImageProps) {
     positionY,
   } = useContext(zoomableContext) as ZoomableContextType;
 
-  useLayoutEffect(() => {
-    const image = imageRef.current as HTMLImageElement;
+  const handleOnImageLoad = () => {
+    onImageLoad();
+    setIsLoading(true);
+  };
+
+  useEffect(() => {
     const slider = sliderRef.current as HTMLDivElement;
-
-    image.onload = () => {
-      onImageLoad();
-      setIsLoading(true);
-    };
-
-    slider.addEventListener('wheel', onWheel);
+    slider.addEventListener('wheel', event => event.preventDefault());
   }, []);
 
   return (
@@ -55,6 +53,7 @@ export default function({ imageUrl, loading }: ImageProps) {
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
+        onWheel={onWheel}
         style={{
           transformOrigin: '0 0',
           cursor: 'move',
@@ -64,6 +63,7 @@ export default function({ imageUrl, loading }: ImageProps) {
         }}
       >
         <img
+          onLoad={handleOnImageLoad}
           style={{
             width,
             height,
