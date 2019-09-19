@@ -1,4 +1,5 @@
-import React, { FC, useRef, useState, useEffect } from 'react';
+import React, { FC, useRef, useState } from 'react';
+import { useDocumentEventListener } from './hooks';
 
 import { ZoomableProvider } from './ZoomableContext';
 
@@ -41,56 +42,30 @@ const Zoomable: FC<ZoomableProps> = ({
   const [startY, setStartY] = useState<number>(0);
   const [isOnMove, setIsOnMove] = useState<boolean>(false);
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeydown);
-    document.addEventListener('mousemove', handleMouseMoveOutOfBound);
+  const handleKeydown = (event: Event) => {
+    if (event instanceof KeyboardEvent) {
+      const handlers: Record<string, () => void> = {
+        ArrowUp: () =>
+          setPositionY(calculatePositionY(positionY + moveStep, currentZoom)),
+        ArrowDown: () =>
+          setPositionY(calculatePositionY(positionY - moveStep, currentZoom)),
+        ArrowRight: () =>
+          setPositionX(calculatePositionX(positionX - moveStep, currentZoom)),
+        ArrowLeft: () =>
+          setPositionX(calculatePositionX(positionX + moveStep, currentZoom)),
+      };
 
-    return () => {
-      document.removeEventListener('keydown', handleKeydown);
-      document.removeEventListener('mousemove', handleMouseMoveOutOfBound);
-    };
-  }, []);
+      const handler = handlers[event.key];
 
-  const calculatePositionX = (newPositionX: number, currentZoom: number) => {
-    if (newPositionX > 0) return 0;
-    if (newPositionX + width * currentZoom < width)
-      return -width * (currentZoom - 1);
-    return newPositionX;
-  };
-
-  const calculatePositionY = (newPositionY: number, currentZoom: number) => {
-    if (newPositionY > 0) return 0;
-    if (newPositionY + height * currentZoom < height)
-      return -height * (currentZoom - 1);
-    return newPositionY;
-  };
-
-  const handleKeydown = (event: KeyboardEvent) => {
-    const handlers: Record<string, () => void> = {
-      ArrowUp: () => {
-        setPositionY(calculatePositionY(positionY + moveStep, currentZoom));
-      },
-      ArrowDown: () => {
-        setPositionY(calculatePositionY(positionY - moveStep, currentZoom));
-      },
-      ArrowRight: () => {
-        setPositionX(calculatePositionX(positionX - moveStep, currentZoom));
-      },
-      ArrowLeft: () => {
-        setPositionX(calculatePositionX(positionX + moveStep, currentZoom));
-      },
-    };
-
-    const handler = handlers[event.key];
-
-    if (handler) {
-      event.preventDefault();
-      handler();
+      if (handler) {
+        event.preventDefault();
+        handler();
+      }
     }
   };
 
-  const handleMouseMoveOutOfBound = (event: MouseEvent) => {
-    if (isOnMove) {
+  const handleMouseMoveOutOfBound = (event: Event) => {
+    if (isOnMove && event instanceof MouseEvent) {
       event.preventDefault();
       const wrapper = wrapperRef.current as HTMLDivElement;
       const wrapperRect = wrapper.getBoundingClientRect();
@@ -105,6 +80,23 @@ const Zoomable: FC<ZoomableProps> = ({
         setIsOnMove(false);
       }
     }
+  };
+
+  useDocumentEventListener('keydown', handleKeydown);
+  useDocumentEventListener('mousemove', handleMouseMoveOutOfBound);
+
+  const calculatePositionX = (newPositionX: number, currentZoom: number) => {
+    if (newPositionX > 0) return 0;
+    if (newPositionX + width * currentZoom < width)
+      return -width * (currentZoom - 1);
+    return newPositionX;
+  };
+
+  const calculatePositionY = (newPositionY: number, currentZoom: number) => {
+    if (newPositionY > 0) return 0;
+    if (newPositionY + height * currentZoom < height)
+      return -height * (currentZoom - 1);
+    return newPositionY;
   };
 
   const scaleLinear = (
