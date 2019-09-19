@@ -7,9 +7,9 @@ export function useDocumentEventListener(
   eventName: string,
   handler: EventListenerHandlerType
 ) {
-  const savedHandler = useRef();
+  const savedHandler = useRef<EventListenerHandlerType>();
   useEffect(() => {
-    (savedHandler.current as unknown) = handler;
+    savedHandler.current = handler;
   }, [handler]);
 
   useEffect(() => {
