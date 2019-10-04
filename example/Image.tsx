@@ -1,8 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Zoomable, ZoomableImage } from '../.';
 
+const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 // const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
-const zoomImageUrl = 'https://picsum.photos/id/244/1920/1080';
+const zoomImageUrl = `https://picsum.photos/id/${getRandomInt(
+  1,
+  1000
+)}/1920/1080`;
 // const zoomImageUrl = 'https://picsum.photos/id/1037/800/5000';
 
 const ImageApp = () => {

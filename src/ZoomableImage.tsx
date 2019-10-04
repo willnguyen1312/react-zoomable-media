@@ -60,6 +60,7 @@ export default function({ imageUrl, loading }: ImageProps) {
         style={{
           transformOrigin: '0 0',
           cursor: 'move',
+          willChange: 'transform',
           touchAction: 'none',
           width,
           height,

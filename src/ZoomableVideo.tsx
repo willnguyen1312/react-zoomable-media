@@ -36,6 +36,8 @@ export default function({ children }: VideoProps) {
           transformOrigin: '0 0',
           cursor: 'move',
           width: '100%',
+          touchAction: 'none',
+          willChange: 'transform',
           transform: `translate(${positionX}px, ${positionY}px) scale(${currentZoom})`,
         }}
       >
