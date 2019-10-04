@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Zoomable, ZoomableImage } from '../.';
 
 // const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
-const zoomImageUrl = 'https://picsum.photos/id/1022/1920/1080';
+const zoomImageUrl = 'https://picsum.photos/id/244/1920/1080';
 // const zoomImageUrl = 'https://picsum.photos/id/1037/800/5000';
 
 const ImageApp = () => {
@@ -19,13 +19,7 @@ const ImageApp = () => {
       }}
     >
       <div style={{ width: 810, height: 450 }}>
-        <Zoomable
-          enable={true}
-          maxZoom={4}
-          moveStep={50}
-          wheelZoomRatio={0.1}
-          zoomStep={10}
-        >
+        <Zoomable maxZoom={4} moveStep={50} wheelZoomRatio={0.1} zoomStep={10}>
           <ZoomableImage imageUrl={zoomImageUrl} />
         </Zoomable>
       </div>

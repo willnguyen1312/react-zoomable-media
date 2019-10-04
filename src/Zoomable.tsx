@@ -13,6 +13,14 @@ interface ZoomableProps {
   moveStep: number;
 }
 
+type PointerPosition = {
+  x: number;
+  y: number;
+};
+const pointers = new Map<number, PointerPosition>();
+let prevDistance = -1;
+const ZOOM_DELTA = 0.5;
+
 const Zoomable: FC<ZoomableProps> = ({
   children,
   moveStep,
@@ -137,21 +145,15 @@ const Zoomable: FC<ZoomableProps> = ({
     setHeight(clientHeight);
   };
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (isOnMove) {
-      event.preventDefault();
-      const { pageX, pageY } = event;
-      const offsetX = pageX - startX;
-      const offsetY = pageY - startY;
-
-      setPositionX(calculatePositionX(lastPositionX + offsetX, currentZoom));
-      setPositionY(calculatePositionY(lastPositionY + offsetY, currentZoom));
-    }
-  };
-
-  const onWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    event.preventDefault();
-
+  const processZoom = ({
+    delta,
+    x,
+    y,
+  }: {
+    delta: number;
+    x: number;
+    y: number;
+  }) => {
     const wrapper = wrapperRef.current as HTMLDivElement;
     const wrapperRect = wrapper.getBoundingClientRect();
 
@@ -163,11 +165,8 @@ const Zoomable: FC<ZoomableProps> = ({
       wrapperRect.top +
       document.documentElement.scrollTop +
       (wrapper.clientHeight - height) / 2;
-
-    const zoomPointX = event.pageX - offsetLeft;
-    const zoomPointY = event.pageY - offsetTop;
-
-    const delta = clamp(event.deltaY, -0.5, 0.5);
+    const zoomPointX = x - offsetLeft;
+    const zoomPointY = y - offsetTop;
 
     const zoomTargetX = (zoomPointX - positionX) / currentZoom;
     const zoomTargetY = (zoomPointY - positionY) / currentZoom;
@@ -193,6 +192,12 @@ const Zoomable: FC<ZoomableProps> = ({
     );
     setCurrentZoom(newCurrentZoom);
     setPercentage(newPercentage);
+  };
+
+  const onWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const delta = clamp(event.deltaY, -ZOOM_DELTA, ZOOM_DELTA);
+    processZoom({ delta, x: event.pageX, y: event.pageY });
   };
 
   const updatePercentage = (newPercentage: number) => {
@@ -224,28 +229,93 @@ const Zoomable: FC<ZoomableProps> = ({
 
   const zoomOut = () => setPercentage(Math.max(0, percentage - zoomStep));
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
-    const { pageX, pageY } = event;
-
+    const { pageX, pageY, pointerId } = event;
+    setIsOnMove(true);
     setLastPositionX(positionX);
     setLastPositionY(positionY);
     setStartX(pageX);
     setStartY(pageY);
-    setIsOnMove(true);
+    pointers.set(pointerId, { x: pageX, y: pageY });
   };
 
-  const handleMouseUp = () => setIsOnMove(false);
+  const getPointersCenter = () => {
+    let x = 0;
+    let y = 0;
+
+    pointers.forEach(value => {
+      x += value.x;
+      y += value.y;
+    });
+
+    x /= pointers.size;
+    y /= pointers.size;
+
+    return {
+      x,
+      y,
+    };
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const { pageX, pageY, pointerId } = event;
+    for (const [cachedPointerid] of pointers.entries()) {
+      if (cachedPointerid === pointerId) {
+        pointers.set(cachedPointerid, { x: pageX, y: pageY });
+      }
+    }
+
+    if (isOnMove) {
+      event.preventDefault();
+      if (pointers.size === 1) {
+        const offsetX = pageX - startX;
+        const offsetY = pageY - startY;
+
+        setPositionX(calculatePositionX(lastPositionX + offsetX, currentZoom));
+        setPositionY(calculatePositionY(lastPositionY + offsetY, currentZoom));
+      }
+      if (pointers.size === 2) {
+        const pointersIterator = pointers.values();
+        const first = pointersIterator.next().value as PointerPosition;
+        const second = pointersIterator.next().value as PointerPosition;
+        const curDistance = Math.sqrt(
+          Math.pow(first.x - second.x, 2) + Math.pow(first.y - second.y, 2)
+        );
+
+        const { x, y } = getPointersCenter();
+
+        if (prevDistance > 0) {
+          if (curDistance > prevDistance) {
+            // The distance between the two pointers has increased
+            processZoom({ delta: ZOOM_DELTA, x, y });
+          }
+          if (curDistance < prevDistance) {
+            // The distance between the two pointers has decreased
+            processZoom({ delta: -ZOOM_DELTA, x, y });
+          }
+        }
+
+        // Cache the distance for the next move event
+        prevDistance = curDistance;
+      }
+    }
+  };
+
+  const handlePointerUp = () => {
+    pointers.clear();
+    setIsOnMove(false);
+  };
 
   return (
     <ZoomableProvider
       value={{
         width,
         height,
-        handleMouseUp,
         updatePercentage,
-        handleMouseDown,
-        handleMouseMove,
+        handlePointerUp,
+        handlePointerDown,
+        handlePointerMove,
         onWheel,
         wrapperRef,
         sliderRef,

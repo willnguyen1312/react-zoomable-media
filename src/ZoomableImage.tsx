@@ -17,9 +17,9 @@ export default function({ imageUrl, loading }: ImageProps) {
     wrapperRef,
     currentZoom,
     sliderRef,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
     positionX,
     positionY,
   } = useContext(zoomableContext) as ZoomableContextType;
@@ -50,13 +50,17 @@ export default function({ imageUrl, loading }: ImageProps) {
     >
       <div
         ref={sliderRef}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        onPointerOut={handlePointerUp}
+        onPointerMove={handlePointerMove}
         onWheel={onWheel}
         style={{
           transformOrigin: '0 0',
           cursor: 'move',
+          touchAction: 'none',
           width,
           height,
           transform: `translate(${positionX}px, ${positionY}px) scale(${currentZoom})`,

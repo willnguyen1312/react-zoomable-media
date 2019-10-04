@@ -25,6 +25,7 @@
     "paths": {
       "*": ["src/*", "node_modules/*"]
     },
+    "downlevelIteration": true,
     "jsx": "react",
     "esModuleInterop": true
   }

@@ -18,9 +18,9 @@ export interface ZoomableContextType {
   zoomIn: () => void;
   zoomOut: () => void;
   onWheel: (event: React.WheelEvent<HTMLDivElement>) => void;
-  handleMouseUp: () => void;
-  handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
-  handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void;
+  handlePointerUp: () => void;
+  handlePointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
+  handlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
   wrapperRef: React.RefObject<HTMLDivElement>;
   sliderRef: React.RefObject<HTMLDivElement>;
 }
