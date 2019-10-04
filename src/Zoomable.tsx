@@ -20,15 +20,8 @@ const Zoomable: FC<ZoomableProps> = ({
   wheelZoomRatio,
   zoomStep,
 }) => {
-  const wrapperRef = useRef<HTMLDivElement>() as React.MutableRefObject<
-    HTMLDivElement
-  >;
-  const sliderRef = useRef<HTMLDivElement>() as React.MutableRefObject<
-    HTMLDivElement
-  >;
-  const imageRef = useRef<HTMLImageElement>() as React.MutableRefObject<
-    HTMLImageElement
-  >;
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const [width, setWidth] = useState<number>(0);
   const [height, setHeight] = useState<number>(0);
@@ -113,7 +106,7 @@ const Zoomable: FC<ZoomableProps> = ({
 
   const calculateCurrentZoom = scaleLinear(0, 100, 1, maxZoom);
 
-  const onImageLoad = () => {
+  const onImageLoad = (imageRef: React.RefObject<HTMLImageElement>) => {
     const image = imageRef.current as HTMLImageElement;
 
     const { clientWidth, clientHeight } = wrapperRef.current as HTMLDivElement;
@@ -255,7 +248,6 @@ const Zoomable: FC<ZoomableProps> = ({
         handleMouseMove,
         onWheel,
         wrapperRef,
-        imageRef,
         sliderRef,
         onImageLoad,
         onVideoLoad,

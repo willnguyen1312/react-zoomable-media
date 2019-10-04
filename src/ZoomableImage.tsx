@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { ZoomableContextType, zoomableContext } from './ZoomableContext';
 
 interface ImageProps {
@@ -8,12 +8,12 @@ interface ImageProps {
 
 export default function({ imageUrl, loading }: ImageProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const imageRef = useRef<HTMLImageElement>(null);
   const {
     onImageLoad,
     onWheel,
     width,
     height,
-    imageRef,
     wrapperRef,
     currentZoom,
     sliderRef,
@@ -25,7 +25,7 @@ export default function({ imageUrl, loading }: ImageProps) {
   } = useContext(zoomableContext) as ZoomableContextType;
 
   const handleOnImageLoad = () => {
-    onImageLoad();
+    onImageLoad(imageRef);
     setIsLoading(true);
   };
 
