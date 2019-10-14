@@ -13,11 +13,13 @@ interface ZoomableProps {
   moveStep: number;
 }
 
-type PointerPosition = {
-  x: number;
-  y: number;
+type PointerPositionMap = {
+  [pointerId: string]: {
+    x: number;
+    y: number;
+  };
 };
-const pointers = new Map<number, PointerPosition>();
+let pointers: PointerPositionMap = {};
 let prevDistance = -1;
 const ZOOM_DELTA = 0.5;
 
@@ -237,20 +239,23 @@ const Zoomable: FC<ZoomableProps> = ({
     setLastPositionY(positionY);
     setStartX(pageX);
     setStartY(pageY);
-    pointers.set(pointerId, { x: pageX, y: pageY });
+    pointers[pointerId] = { x: pageX, y: pageY };
   };
 
   const getPointersCenter = () => {
-    let x = 0;
-    let y = 0;
+    const values = Object.values(pointers);
 
-    pointers.forEach(value => {
-      x += value.x;
-      y += value.y;
-    });
+    const { sumX, sumY } = values.reduce(
+      (acc, cur) => {
+        acc.sumX += cur.x;
+        acc.sumY += cur.y;
+        return acc;
+      },
+      { sumX: 0, sumY: 0 }
+    );
 
-    x /= pointers.size;
-    y /= pointers.size;
+    const x = sumX / values.length;
+    const y = sumY / values.length;
 
     return {
       x,
@@ -260,25 +265,24 @@ const Zoomable: FC<ZoomableProps> = ({
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     const { pageX, pageY, pointerId } = event;
-    for (const [cachedPointerid] of pointers.entries()) {
-      if (cachedPointerid === pointerId) {
-        pointers.set(cachedPointerid, { x: pageX, y: pageY });
-      }
-    }
+    const keyValuePairs = Object.entries(pointers);
+
+    keyValuePairs.forEach(([key]) => {
+      if (key === pointerId.toString()) pointers[key] = { x: pageX, y: pageY };
+    });
 
     if (isOnMove) {
       event.preventDefault();
-      if (pointers.size === 1) {
+      if (keyValuePairs.length == 1) {
         const offsetX = pageX - startX;
         const offsetY = pageY - startY;
 
         setPositionX(calculatePositionX(lastPositionX + offsetX, currentZoom));
         setPositionY(calculatePositionY(lastPositionY + offsetY, currentZoom));
       }
-      if (pointers.size === 2) {
-        const pointersIterator = pointers.values();
-        const first = pointersIterator.next().value as PointerPosition;
-        const second = pointersIterator.next().value as PointerPosition;
+      if (keyValuePairs.length === 2) {
+        const [, first] = keyValuePairs[0];
+        const [, second] = keyValuePairs[1];
         const curDistance = Math.sqrt(
           Math.pow(first.x - second.x, 2) + Math.pow(first.y - second.y, 2)
         );
@@ -303,7 +307,7 @@ const Zoomable: FC<ZoomableProps> = ({
   };
 
   const handlePointerUp = () => {
-    pointers.clear();
+    pointers = {};
     setIsOnMove(false);
   };
 
