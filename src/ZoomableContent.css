@@ -1,0 +1,4 @@
+.wrapper {
+  transform-origin: 0 0;
+  touch-action: none;
+}

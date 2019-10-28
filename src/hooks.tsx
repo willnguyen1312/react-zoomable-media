@@ -2,8 +2,7 @@ import { useRef, useEffect } from 'react';
 
 type EventListenerHandlerType = (event: Event) => void;
 
-// Hook
-export function useDocumentEventListener(
+export function useEventListener(
   eventName: string,
   handler: EventListenerHandlerType
 ) {
@@ -16,10 +15,10 @@ export function useDocumentEventListener(
     const eventListener = (event: Event) =>
       (savedHandler as any).current(event);
 
-    document.addEventListener(eventName, eventListener);
+    window.addEventListener(eventName, eventListener);
 
     return () => {
-      document.removeEventListener(eventName, eventListener);
+      window.removeEventListener(eventName, eventListener);
     };
   }, [eventName]);
 }

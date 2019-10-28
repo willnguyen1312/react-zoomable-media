@@ -28,7 +28,13 @@ const ImageApp = () => {
       }}
     >
       <div style={{ width: 810, height: 450 }}>
-        <Zoomable maxZoom={4} moveStep={50} wheelZoomRatio={0.1} zoomStep={10}>
+        <Zoomable
+          enable
+          maxZoom={4}
+          moveStep={50}
+          wheelZoomRatio={0.1}
+          zoomStep={10}
+        >
           <ZoomableImage imageUrl={zoomImageUrl} />
         </Zoomable>
       </div>
