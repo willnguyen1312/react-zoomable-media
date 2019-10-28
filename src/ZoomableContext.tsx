@@ -1,6 +1,7 @@
 import React from 'react';
 
 export interface ZoomableContextType {
+  id: string | undefined;
   height: number;
   width: number;
   currentZoom: number;
@@ -12,9 +13,13 @@ export interface ZoomableContextType {
   startX: number;
   startY: number;
   percentage: number;
+  enable: boolean;
+  enableFocus: () => void;
   updatePercentage: (newCurrentZoom: number) => void;
-  onImageLoad: (imageRef: React.RefObject<HTMLImageElement>) => void;
-  onVideoLoad: () => void;
+  setWrapperDimensions: () => void;
+  onMediaReady: (
+    mediaRef: React.RefObject<HTMLImageElement | HTMLVideoElement>
+  ) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   onWheel: (event: React.WheelEvent<HTMLDivElement>) => void;
@@ -22,7 +27,6 @@ export interface ZoomableContextType {
   handlePointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
   handlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
   wrapperRef: React.RefObject<HTMLDivElement>;
-  sliderRef: React.RefObject<HTMLDivElement>;
 }
 
 export const zoomableContext = React.createContext<ZoomableContextType | null>(
@@ -31,14 +35,3 @@ export const zoomableContext = React.createContext<ZoomableContextType | null>(
 
 export const ZoomableProvider = zoomableContext.Provider;
 export const ZoomableConsumer = zoomableContext.Consumer;
-
-export const withZoomableContext = <C extends React.ElementType>(
-  component: C
-) => (props: Omit<React.ComponentProps<C>, 'zoomContext'>) => {
-  const Component: any = component; // eslint-disable-line @typescript-eslint/no-explicit-any
-  return (
-    <ZoomableConsumer>
-      {zoomContext => <Component {...props} zoomContext={zoomContext} />}
-    </ZoomableConsumer>
-  );
-};

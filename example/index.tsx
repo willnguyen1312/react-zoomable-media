@@ -24,19 +24,7 @@ const App = () => {
         <button onClick={toggleSelectVideo}>Image</button>
         <button onClick={toggleSelectVideo}>Video</button>
       </nav>
-      {isVideo ? (
-        <Zoomable
-          enable={true}
-          maxZoom={4}
-          moveStep={50}
-          wheelZoomRatio={0.1}
-          zoomStep={10}
-        >
-          <Video />
-        </Zoomable>
-      ) : (
-        <Image />
-      )}
+      {isVideo ? <Video /> : <Image />}
     </>
   );
 };

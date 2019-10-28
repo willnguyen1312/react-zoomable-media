@@ -1,72 +1,28 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef, FC } from 'react';
 import { ZoomableContextType, zoomableContext } from './ZoomableContext';
+import { ZoomableWrapper } from './ZoomableWrapper';
+import { ZoomableContent } from './ZoomableContent';
 
 interface ImageProps {
   imageUrl: string;
   loading?: React.ReactNode;
 }
 
-export default function({ imageUrl, loading }: ImageProps) {
+export const ZoomableImage: FC<ImageProps> = ({ imageUrl, loading }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const imageRef = useRef<HTMLImageElement>(null);
-  const {
-    onImageLoad,
-    onWheel,
-    width,
-    height,
-    wrapperRef,
-    currentZoom,
-    sliderRef,
-    handlePointerDown,
-    handlePointerMove,
-    handlePointerUp,
-    positionX,
-    positionY,
-  } = useContext(zoomableContext) as ZoomableContextType;
+  const { onMediaReady, width, height } = useContext(
+    zoomableContext
+  ) as ZoomableContextType;
 
   const handleOnImageLoad = () => {
-    onImageLoad(imageRef);
-    setIsLoading(true);
+    onMediaReady(imageRef);
+    setIsLoading(false);
   };
 
-  useEffect(() => {
-    const slider = sliderRef.current as HTMLDivElement;
-    slider.addEventListener('wheel', event => event.preventDefault());
-  }, []);
-
   return (
-    <div
-      style={{
-        zIndex: 1312,
-        backgroundColor: '#000',
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
-      }}
-      ref={wrapperRef}
-    >
-      <div
-        ref={sliderRef}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        onPointerOut={handlePointerUp}
-        onPointerMove={handlePointerMove}
-        onWheel={onWheel}
-        style={{
-          transformOrigin: '0 0',
-          cursor: 'move',
-          willChange: 'transform',
-          touchAction: 'none',
-          width,
-          height,
-          transform: `translate(${positionX}px, ${positionY}px) scale(${currentZoom})`,
-        }}
-      >
+    <ZoomableWrapper>
+      <ZoomableContent>
         <img
           onLoad={handleOnImageLoad}
           style={{
@@ -76,8 +32,23 @@ export default function({ imageUrl, loading }: ImageProps) {
           ref={imageRef}
           src={imageUrl}
         />
-      </div>
-      {isLoading && loading}
-    </div>
+      </ZoomableContent>
+      {isLoading && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {loading}
+        </div>
+      )}
+    </ZoomableWrapper>
   );
-}
+};

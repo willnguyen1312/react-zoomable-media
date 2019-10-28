@@ -1,16 +1,23 @@
-import React, { FC, useRef, useState } from 'react';
-import { useDocumentEventListener } from './hooks';
+import React, { FC, useRef, useState, useEffect } from 'react';
+import { useEventListener } from './hooks';
 
 import { ZoomableProvider } from './ZoomableContext';
+import { fullscreenLookup } from './helper';
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
 interface ZoomableProps {
+  id?: string;
+  enable: boolean;
   maxZoom: number;
   wheelZoomRatio: number;
   zoomStep: number;
   moveStep: number;
+  up?: string;
+  down?: string;
+  left?: string;
+  right?: string;
 }
 
 type PointerPosition = {
@@ -21,18 +28,26 @@ const pointers = new Map<number, PointerPosition>();
 let prevDistance = -1;
 const ZOOM_DELTA = 0.5;
 
-const Zoomable: FC<ZoomableProps> = ({
+export const Zoomable: FC<ZoomableProps> = ({
+  id,
+  enable,
   children,
   moveStep,
   maxZoom,
   wheelZoomRatio,
   zoomStep,
+  up,
+  down,
+  left,
+  right,
 }) => {
+  let mediaElement: HTMLImageElement | HTMLVideoElement | undefined;
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const sliderRef = useRef<HTMLDivElement>(null);
 
-  const [width, setWidth] = useState<number>(0);
-  const [height, setHeight] = useState<number>(0);
+  const [width, setWidth] = useState<number>(1);
+  const [height, setHeight] = useState<number>(1);
+  const [lastWidth, setlastWidth] = useState<number>(1);
+  const [lastHeight, setlastHeight] = useState<number>(1);
   const [currentZoom, setCurrentZoom] = useState<number>(1);
   const [percentage, setPercentage] = useState<number>(0);
   const [lastPositionX, setLastPositionX] = useState<number>(0);
@@ -42,26 +57,78 @@ const Zoomable: FC<ZoomableProps> = ({
   const [startX, setStartX] = useState<number>(0);
   const [startY, setStartY] = useState<number>(0);
   const [isOnMove, setIsOnMove] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [wrapperWidthNormal, setWrapperWidthNormal] = useState<number>(1);
+  const [wrapperHeightNormal, setWrapperHeightNormal] = useState<number>(1);
+  const [wrapperWidthFullscreen, setWrapperWidthFullscreen] = useState<number>(
+    1
+  );
+  const [wrapperHeightFullscreen, setWrapperHeightFullscreen] = useState<
+    number
+  >(1);
+
+  useEffect(() => {
+    calculateNewPositions();
+  }, [width]);
+
+  useEffect(() => {
+    enableFocus();
+  }, [enable]);
 
   const handleKeydown = (event: Event) => {
     if (event instanceof KeyboardEvent) {
+      const { shiftKey, key } = event;
       const handlers: Record<string, () => void> = {
-        ArrowUp: () =>
+        [up || 'ArrowUp']: () =>
           setPositionY(calculatePositionY(positionY + moveStep, currentZoom)),
-        ArrowDown: () =>
+        [down || 'ArrowDown']: () =>
           setPositionY(calculatePositionY(positionY - moveStep, currentZoom)),
-        ArrowRight: () =>
-          setPositionX(calculatePositionX(positionX - moveStep, currentZoom)),
-        ArrowLeft: () =>
-          setPositionX(calculatePositionX(positionX + moveStep, currentZoom)),
+        [left || 'ArrowLeft']: () => {
+          if (shiftKey) {
+            zoomOut();
+          } else {
+            setPositionX(calculatePositionX(positionX + moveStep, currentZoom));
+          }
+        },
+        [right || 'ArrowRight']: () => {
+          if (shiftKey) {
+            zoomIn();
+          } else {
+            setPositionX(calculatePositionX(positionX - moveStep, currentZoom));
+          }
+        },
+        [up || 'up']: () =>
+          setPositionY(calculatePositionY(positionY + moveStep, currentZoom)),
+        [down || 'down']: () =>
+          setPositionY(calculatePositionY(positionY - moveStep, currentZoom)),
+        [left || 'left']: () => {
+          if (shiftKey) {
+            zoomOut();
+          } else {
+            setPositionX(calculatePositionX(positionX + moveStep, currentZoom));
+          }
+        },
+        [right || 'right']: () => {
+          if (shiftKey) {
+            zoomIn();
+          } else {
+            setPositionX(calculatePositionX(positionX - moveStep, currentZoom));
+          }
+        },
       };
 
-      const handler = handlers[event.key];
+      const handler = handlers[key];
 
       if (handler) {
         event.preventDefault();
         handler();
       }
+    }
+  };
+
+  const enableFocus = () => {
+    if (enable) {
+      (wrapperRef.current as HTMLDivElement).focus();
     }
   };
 
@@ -83,8 +150,42 @@ const Zoomable: FC<ZoomableProps> = ({
     }
   };
 
-  useDocumentEventListener('keydown', handleKeydown);
-  useDocumentEventListener('mousemove', handleMouseMoveOutOfBound);
+  const setWrapperDimensions = () => {
+    const wrapper = wrapperRef.current;
+    if (wrapper) {
+      const { offsetWidth, offsetHeight } = wrapper;
+
+      if (checkFullscreen()) {
+        setWrapperWidthFullscreen(offsetWidth);
+        setWrapperHeightFullscreen(offsetHeight);
+        setIsFullscreen(true);
+      } else {
+        setWrapperWidthNormal(isFullscreen ? wrapperWidthNormal : offsetWidth);
+        setWrapperHeightNormal(
+          isFullscreen ? wrapperHeightNormal : offsetHeight
+        );
+        setIsFullscreen(false);
+      }
+    }
+  };
+
+  const processMedia = () => {
+    if (mediaElement instanceof HTMLImageElement) {
+      processImage();
+    }
+    if (mediaElement instanceof HTMLVideoElement) {
+      processVideo();
+    }
+  };
+
+  useEventListener('keydown', handleKeydown);
+  useEventListener('mousemove', handleMouseMoveOutOfBound);
+  useEventListener('resize', setWrapperDimensions);
+
+  if (fullscreenLookup) {
+    useEventListener(fullscreenLookup.fullscreenchange, setWrapperDimensions);
+    useEventListener(fullscreenLookup.fullscreenchange, processMedia);
+  }
 
   const calculatePositionX = (newPositionX: number, currentZoom: number) => {
     if (newPositionX > 0) return 0;
@@ -114,8 +215,8 @@ const Zoomable: FC<ZoomableProps> = ({
 
   const calculateCurrentZoom = scaleLinear(0, 100, 1, maxZoom);
 
-  const onImageLoad = (imageRef: React.RefObject<HTMLImageElement>) => {
-    const image = imageRef.current as HTMLImageElement;
+  const processImage = () => {
+    const image = mediaElement as HTMLImageElement;
 
     const { clientWidth, clientHeight } = wrapperRef.current as HTMLDivElement;
     const { naturalWidth, naturalHeight } = image;
@@ -136,13 +237,85 @@ const Zoomable: FC<ZoomableProps> = ({
     }
   };
 
-  const onVideoLoad = () => {
-    const wrapper = wrapperRef.current as HTMLDivElement;
-    const video = wrapper.querySelector('video') as HTMLVideoElement;
-    const { clientWidth, clientHeight } = video;
+  const checkFullscreen = () => {
+    if (fullscreenLookup) {
+      return Boolean((document as any)[fullscreenLookup.fullscreenElement]);
+    }
+    return false;
+  };
 
-    setWidth(clientWidth);
-    setHeight(clientHeight);
+  const getWrapperDimensions = () => {
+    if (checkFullscreen()) {
+      return {
+        wrapperWidth: wrapperWidthFullscreen,
+        wrapperHeight: wrapperHeightFullscreen,
+      };
+    } else {
+      return {
+        wrapperWidth: wrapperWidthNormal,
+        wrapperHeight: wrapperHeightNormal,
+      };
+    }
+  };
+
+  const calculateDimensions = ({
+    mediaWidth,
+    mediaHeight,
+  }: {
+    mediaWidth: number;
+    mediaHeight: number;
+  }) => {
+    const mediaRatio = mediaWidth / mediaHeight;
+    const { wrapperWidth, wrapperHeight } = getWrapperDimensions();
+    const wrapperRatio = wrapperWidth / wrapperHeight;
+
+    let newWidth = 0;
+    let newHeight = 0;
+
+    if (mediaRatio >= wrapperRatio) {
+      newWidth = wrapperWidth;
+      newHeight = newWidth / mediaRatio;
+    } else {
+      newHeight = wrapperHeight;
+      newWidth = newHeight * mediaRatio;
+    }
+
+    return { newWidth, newHeight };
+  };
+
+  const processVideo = async () => {
+    const video = mediaElement as HTMLVideoElement;
+    // Safari doesn't handle the video event's onloadedMetadata the same as other browsers
+    // Wait until the video element dimensions ready and continue
+    while (video.videoWidth === 0) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    const { videoWidth, videoHeight } = video;
+    const { newWidth, newHeight } = calculateDimensions({
+      mediaWidth: videoWidth,
+      mediaHeight: videoHeight,
+    });
+
+    setlastWidth(width);
+    setlastHeight(height);
+    setWidth(newWidth);
+    setHeight(newHeight);
+  };
+
+  const calculateNewPositions = () => {
+    const widthRatio = width / lastWidth;
+    const heightRatio = height / lastHeight;
+
+    setPositionX(positionX * widthRatio);
+    setPositionY(positionY * heightRatio);
+  };
+
+  const onMediaReady = (
+    mediaRef: React.RefObject<HTMLImageElement | HTMLVideoElement>
+  ) => {
+    let media = mediaRef.current as HTMLImageElement | HTMLVideoElement;
+    mediaElement = media;
+    processMedia();
   };
 
   const processZoom = ({
@@ -196,7 +369,7 @@ const Zoomable: FC<ZoomableProps> = ({
 
   const onWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     event.preventDefault();
-    const delta = clamp(event.deltaY, -ZOOM_DELTA, ZOOM_DELTA);
+    const delta = -clamp(event.deltaY, -ZOOM_DELTA, ZOOM_DELTA);
     processZoom({ delta, x: event.pageX, y: event.pageY });
   };
 
@@ -225,9 +398,9 @@ const Zoomable: FC<ZoomableProps> = ({
     setCurrentZoom(newCurrentZoom);
   };
 
-  const zoomIn = () => setPercentage(Math.min(percentage + zoomStep, 100));
+  const zoomIn = () => updatePercentage(Math.min(percentage + zoomStep, 100));
 
-  const zoomOut = () => setPercentage(Math.max(0, percentage - zoomStep));
+  const zoomOut = () => updatePercentage(Math.max(0, percentage - zoomStep));
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -310,17 +483,19 @@ const Zoomable: FC<ZoomableProps> = ({
   return (
     <ZoomableProvider
       value={{
+        id,
+        enable,
         width,
         height,
         updatePercentage,
         handlePointerUp,
         handlePointerDown,
         handlePointerMove,
+        setWrapperDimensions,
         onWheel,
+        enableFocus,
         wrapperRef,
-        sliderRef,
-        onImageLoad,
-        onVideoLoad,
+        onMediaReady,
         zoomIn,
         zoomOut,
         currentZoom,
@@ -338,5 +513,3 @@ const Zoomable: FC<ZoomableProps> = ({
     </ZoomableProvider>
   );
 };
-
-export default Zoomable;

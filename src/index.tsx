@@ -1,4 +1,4 @@
-export { default as Zoomable } from './Zoomable';
-export { default as ZoomableImage } from './ZoomableImage';
-export { default as ZoomableVideo } from './ZoomableVideo';
+export { Zoomable } from './Zoomable';
+export { ZoomableImage } from './ZoomableImage';
+export { ZoomableVideo } from './ZoomableVideo';
 export * from './ZoomableContext';
