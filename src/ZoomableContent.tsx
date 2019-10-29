@@ -1,8 +1,7 @@
-import React, { FC, useRef, useEffect, useContext } from 'react';
+import React, { FC, useEffect, useContext } from 'react';
 import { zoomableContext, ZoomableContextType } from './ZoomableContext';
 
 export const ZoomableContent: FC = ({ children }) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const {
     onWheel,
     handlePointerDown,
@@ -14,10 +13,11 @@ export const ZoomableContent: FC = ({ children }) => {
     positionY,
     currentZoom,
     enable,
+    contentRef,
   } = useContext(zoomableContext) as ZoomableContextType;
 
   useEffect(() => {
-    const wrapper = wrapperRef.current as HTMLDivElement;
+    const wrapper = contentRef.current as HTMLDivElement;
     const preventDefault = (event: WheelEvent) => event.preventDefault();
     wrapper.addEventListener('wheel', preventDefault);
 
@@ -26,7 +26,7 @@ export const ZoomableContent: FC = ({ children }) => {
 
   return (
     <div
-      ref={wrapperRef}
+      ref={contentRef}
       onWheel={onWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

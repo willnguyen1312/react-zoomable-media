@@ -23,7 +23,7 @@
     "build": "tsdx build",
     "test": "tsdx test --env=jsdom",
     "lint": "tsdx lint",
-    "local": "live-server --no-browser local",
+    "local": "live-server --no-browser --cors local",
     "demo": "cd example && yarn start",
     "build:demo": "cd example && yarn build",
     "dev": "npm-run-all -p start demo local",

@@ -27,6 +27,7 @@ type PointerPosition = {
 const pointers = new Map<number, PointerPosition>();
 let prevDistance = -1;
 const ZOOM_DELTA = 0.5;
+let mediaElement: HTMLImageElement | HTMLVideoElement | undefined;
 
 export const Zoomable: FC<ZoomableProps> = ({
   id,
@@ -41,8 +42,8 @@ export const Zoomable: FC<ZoomableProps> = ({
   left,
   right,
 }) => {
-  let mediaElement: HTMLImageElement | HTMLVideoElement | undefined;
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const [width, setWidth] = useState<number>(1);
   const [height, setHeight] = useState<number>(1);
@@ -69,7 +70,7 @@ export const Zoomable: FC<ZoomableProps> = ({
 
   useEffect(() => {
     calculateNewPositions();
-  }, [width]);
+  }, [width, lastWidth, height, lastHeight]);
 
   useEffect(() => {
     enableFocus();
@@ -218,23 +219,16 @@ export const Zoomable: FC<ZoomableProps> = ({
   const processImage = () => {
     const image = mediaElement as HTMLImageElement;
 
-    const { clientWidth, clientHeight } = wrapperRef.current as HTMLDivElement;
     const { naturalWidth, naturalHeight } = image;
+    const { newWidth, newHeight } = calculateDimensions({
+      mediaWidth: naturalWidth,
+      mediaHeight: naturalHeight,
+    });
 
-    const imageRatio = naturalWidth / naturalHeight;
-    const wrapperRatio = clientWidth / clientHeight;
-
-    if (imageRatio >= wrapperRatio) {
-      const width = clientWidth;
-      const height = clientWidth / imageRatio;
-      setWidth(width);
-      setHeight(height);
-    } else {
-      const width = clientHeight * imageRatio;
-      const height = clientHeight;
-      setWidth(width);
-      setHeight(height);
-    }
+    setlastWidth(width);
+    setlastHeight(height);
+    setWidth(newWidth);
+    setHeight(newHeight);
   };
 
   const checkFullscreen = () => {
@@ -368,7 +362,6 @@ export const Zoomable: FC<ZoomableProps> = ({
   };
 
   const onWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    event.preventDefault();
     const delta = -clamp(event.deltaY, -ZOOM_DELTA, ZOOM_DELTA);
     processZoom({ delta, x: event.pageX, y: event.pageY });
   };
@@ -480,6 +473,73 @@ export const Zoomable: FC<ZoomableProps> = ({
     setIsOnMove(false);
   };
 
+  const getMediaDimensions = () => {
+    return {
+      mediaWidth:
+        mediaElement instanceof HTMLImageElement
+          ? mediaElement.naturalWidth
+          : (mediaElement as HTMLVideoElement).videoWidth,
+      mediaHeight:
+        mediaElement instanceof HTMLImageElement
+          ? mediaElement.naturalHeight
+          : (mediaElement as HTMLVideoElement).videoHeight,
+    };
+  };
+
+  const cropImage = (imageDataCallbackHandler: (imageData: string) => void) => {
+    const { wrapperWidth, wrapperHeight } = getWrapperDimensions();
+    const {
+      clientWidth: contentWidth,
+      clientHeight: contentHeight,
+    } = contentRef.current as HTMLDivElement;
+    const { mediaWidth } = getMediaDimensions();
+    const scale = mediaWidth / (width * currentZoom);
+    const croppedCanvasWidth = Math.min(
+      wrapperWidth,
+      contentWidth * currentZoom
+    );
+    const croppedCanvasHeight = Math.min(
+      wrapperHeight,
+      contentHeight * currentZoom
+    );
+    const canvas = document.createElement('canvas');
+    const croppedImageWidth = croppedCanvasWidth * scale;
+    const croppedImageHeight = croppedCanvasHeight * scale;
+    canvas.width = croppedImageWidth;
+    canvas.height = croppedImageHeight;
+    const canvasContext = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+    const sx = Math.max(
+      0,
+      (Math.abs(positionX) - (wrapperWidth - contentWidth) / 2) * scale
+    );
+    const sy = Math.max(
+      0,
+      (Math.abs(positionY) - (wrapperHeight - contentHeight) / 2) * scale
+    );
+    const sw = croppedImageWidth;
+    const sh = croppedImageHeight;
+
+    const dx = 0;
+    const dy = 0;
+    const dw = croppedImageWidth;
+    const dh = croppedImageHeight;
+
+    canvasContext.drawImage(
+      mediaElement as HTMLImageElement,
+      sx,
+      sy,
+      sw,
+      sh,
+      dx,
+      dy,
+      dw,
+      dh
+    );
+
+    imageDataCallbackHandler(canvas.toDataURL('image/jpeg', 1.0));
+  };
+
   return (
     <ZoomableProvider
       value={{
@@ -495,6 +555,8 @@ export const Zoomable: FC<ZoomableProps> = ({
         onWheel,
         enableFocus,
         wrapperRef,
+        contentRef,
+        cropImage,
         onMediaReady,
         zoomIn,
         zoomOut,
