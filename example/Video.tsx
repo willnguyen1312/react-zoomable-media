@@ -1,5 +1,62 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ZoomableVideo, Zoomable } from '../dist';
+import {
+  ZoomableVideo,
+  Zoomable,
+  zoomableContext,
+  ZoomableContextType,
+} from '../dist';
+import { useContext } from 'react';
+
+const Video = ({
+  videoRef,
+  isPlay,
+  togglePlay,
+}: {
+  videoRef: React.RefObject<HTMLVideoElement>;
+  isPlay: boolean;
+  togglePlay: () => void;
+}) => {
+  const { cropImage } = useContext(zoomableContext) as ZoomableContextType;
+  const [imageData, serImageData] = useState<string>('');
+
+  const onClickHandler = () => {
+    cropImage((imageData: string) => {
+      serImageData(imageData);
+    });
+  };
+
+  return (
+    <div style={{ width: 810, height: 450 }}>
+      <ZoomableVideo
+        render={({ onMediaReady }) => {
+          return (
+            <video
+              crossOrigin="anonymous"
+              onLoadedMetadata={() => onMediaReady(videoRef)}
+              style={{
+                height: 'auto',
+                width: '100%',
+              }}
+              ref={videoRef}
+              // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
+              // src="http://localhost:8080/trip.mp4"
+              src="/bunny.mp4"
+            />
+          );
+        }}
+      ></ZoomableVideo>
+      <button onClick={togglePlay}>{isPlay ? 'Pause' : 'Play'}</button>
+
+      <button onClick={onClickHandler}>Crop Image</button>
+      {imageData && (
+        <img
+          style={{ width: 810, height: 450, objectFit: 'contain' }}
+          src={imageData}
+        />
+      )}
+    </div>
+  );
+};
 
 const VideoApp = () => {
   const [isPlay, setIsPlay] = useState(false);
@@ -30,29 +87,12 @@ const VideoApp = () => {
           margin: 0,
           padding: 0,
           display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        <div style={{ width: 810, height: 450 }}>
-          <ZoomableVideo
-            render={({ onMediaReady }) => {
-              return (
-                <video
-                  onLoadedMetadata={() => onMediaReady(videoRef)}
-                  style={{
-                    height: 'auto',
-                    width: '100%',
-                  }}
-                  ref={videoRef}
-                  src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
-                  // src="http://127.0.0.1:8080/video.mp4"
-                />
-              );
-            }}
-          ></ZoomableVideo>
-          <button onClick={togglePlay}>{isPlay ? 'Pause' : 'Play'}</button>
-        </div>
+        <Video isPlay={isPlay} togglePlay={togglePlay} videoRef={videoRef} />
       </div>
     </Zoomable>
   );

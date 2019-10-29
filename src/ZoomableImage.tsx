@@ -24,6 +24,7 @@ export const ZoomableImage: FC<ImageProps> = ({ imageUrl, loading }) => {
     <ZoomableWrapper>
       <ZoomableContent>
         <img
+          crossOrigin="anonymous"
           onLoad={handleOnImageLoad}
           style={{
             width,

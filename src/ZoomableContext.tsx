@@ -27,6 +27,8 @@ export interface ZoomableContextType {
   handlePointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
   handlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
   wrapperRef: React.RefObject<HTMLDivElement>;
+  contentRef: React.RefObject<HTMLDivElement>;
+  cropImage: (imageDataCallbackHandler: (imageData: string) => void) => void;
 }
 
 export const zoomableContext = React.createContext<ZoomableContextType | null>(
