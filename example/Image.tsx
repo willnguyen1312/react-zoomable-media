@@ -29,15 +29,26 @@ const Image = () => {
     });
   };
 
+  const downloadImage = () => {
+    const link = document.createElement('a');
+
+    link.setAttribute('href', imageData);
+    link.setAttribute('download', 'Cropped Image');
+    link.click();
+  };
+
   return (
     <>
       <ZoomableImage imageUrl={zoomImageUrl} />
       <button onClick={onClickHandler}>Crop Image</button>
       {imageData && (
-        <img
-          style={{ width: 810, height: 450, objectFit: 'contain' }}
-          src={imageData}
-        />
+        <>
+          <img
+            style={{ width: 810, height: 450, objectFit: 'contain' }}
+            src={imageData}
+          />
+          <button onClick={downloadImage}>Download Cropped Image</button>
+        </>
       )}
     </>
   );
@@ -56,7 +67,7 @@ const ImageApp = () => {
         alignItems: 'center',
       }}
     >
-      <div style={{ width: 810, height: 450 }}>
+      <div style={{ width: 810, height: 450, marginBottom: 150 }}>
         <Zoomable
           enable
           maxZoom={4}
