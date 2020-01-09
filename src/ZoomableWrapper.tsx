@@ -20,7 +20,6 @@ export const ZoomableWrapper: FC = ({ children }) => {
       ref={wrapperRef}
       style={{
         zIndex: 9,
-        backgroundColor: 'black',
         width: '100%',
         height: '100%',
         display: 'flex',
