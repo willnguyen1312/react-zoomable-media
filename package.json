@@ -1,6 +1,6 @@
 {
   "name": "react-zoomable-media",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "React components to handle zoom on video and image",
   "main": "dist/index.js",
   "module": "dist/react-zoomable-media.esm.js",
