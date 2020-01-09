@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "flexibility": "^2.0.1",
-    "react-app-polyfill": "^1.0.5"
+    "pdfjs-dist": "^2.2.228",
+    "react-app-polyfill": "^1.0.5",
+    "react-pdf": "^4.1.0"
   },
   "alias": {
     "react": "../node_modules/react",
@@ -20,6 +22,7 @@
     "@babel/core": "^7.7.7",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
+    "@types/react-pdf": "^4.0.3",
     "parcel": "^1.12.4",
     "typescript": "^3.7.4"
   }

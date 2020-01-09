@@ -5,12 +5,10 @@ import ReactDOM from 'react-dom';
 
 import Video from './Video';
 import Image from './Image';
-import { Zoomable } from '../dist';
+import PDF from './PDF';
 
 const App = () => {
-  const [isVideo, setIsVideo] = useState(false);
-
-  const toggleSelectVideo = () => setIsVideo(!isVideo);
+  const [mediaType, setMediaType] = useState<'image' | 'video' | 'pdf'>('pdf');
 
   return (
     <>
@@ -21,10 +19,25 @@ const App = () => {
           left: 10,
         }}
       >
-        <button onClick={toggleSelectVideo}>Image</button>
-        <button onClick={toggleSelectVideo}>Video</button>
+        <button onClick={() => setMediaType('image')}>Image</button>
+        <button onClick={() => setMediaType('video')}>Video</button>
+        <button onClick={() => setMediaType('pdf')}>PDF</button>
       </nav>
-      {isVideo ? <Video /> : <Image />}
+      {(() => {
+        switch (mediaType) {
+          case 'image':
+            return <Image />;
+
+          case 'video':
+            return <Video />;
+
+          case 'pdf':
+            return <PDF />;
+
+          default:
+            return null;
+        }
+      })()}
     </>
   );
 };
