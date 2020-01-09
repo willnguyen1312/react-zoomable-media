@@ -15,34 +15,9 @@ export default class Sample extends Component {
     pageWidth: 0,
   };
 
-  handleKeyDown = (event: KeyboardEvent) => {
-    const { currentPage, numPages } = this.state;
-    const handlers = {
-      ArrowDown: () => {
-        this.setState({ currentPage: Math.max(1, currentPage - 1) });
-      },
-      ArrowUp: () => {
-        this.setState({
-          currentPage: Math.min(numPages, currentPage + 1),
-        });
-      },
-    };
-
-    const handler = handlers[event.key];
-    if (handler) {
-      handler();
-    }
-  };
-
-  componentDidMount = () =>
-    window.addEventListener('keydown', this.handleKeyDown);
-
-  componentWillUnmount = () =>
-    window.removeEventListener('keydown', this.handleKeyDown);
-
-  onFileChange = event => {
+  onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      file: event.target.files[0],
+      file: event.target.files && event.target.files[0],
     });
   };
 
@@ -54,9 +29,13 @@ export default class Sample extends Component {
     this.setState({ pageWidth: view[2], pageHeight: view[3] });
   };
 
-  onPageNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ currentPage: Number(event.target.value) });
-  };
+  goPrevPage = () =>
+    this.setState({ currentPage: Math.max(1, this.state.currentPage - 1) });
+
+  goNextPage = () =>
+    this.setState({
+      currentPage: Math.min(this.state.numPages, this.state.currentPage + 1),
+    });
 
   render() {
     const { file, numPages, currentPage, pageWidth, pageHeight } = this.state;
@@ -77,16 +56,10 @@ export default class Sample extends Component {
             <input onChange={this.onFileChange} type="file" />
           </div>
           <div>
-            <span>Page Number:</span>
-            <input
-              onChange={this.onPageNumberChange}
-              value={currentPage}
-              type="number"
-              name="numPage"
-              id="numPage"
-              min={1}
-              max={Number(numPages)}
-            />
+            <span>Current Page: {currentPage}</span>
+            <button onClick={this.goPrevPage}>Previous Page</button>
+            <button onClick={this.goNextPage}>Next Page</button>
+            <span>{currentPage === numPages && 'Last page'}</span>
           </div>
           <Zoomable
             enable
