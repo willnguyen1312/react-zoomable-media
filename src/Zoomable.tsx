@@ -537,7 +537,7 @@ export const Zoomable: FC<ZoomableProps> = ({
       dh
     );
 
-    imageDataCallbackHandler(canvas.toDataURL('image/png', 1.0));
+    imageDataCallbackHandler(canvas.toDataURL());
   };
 
   return (
