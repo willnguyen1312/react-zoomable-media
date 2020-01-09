@@ -1,5 +1,8 @@
 import React from 'react';
 
+export type MediaElement = HTMLImageElement | HTMLVideoElement;
+export type DivArg = { width: number; height: number };
+
 export interface ZoomableContextType {
   id: string | undefined;
   height: number;
@@ -17,9 +20,8 @@ export interface ZoomableContextType {
   enableFocus: () => void;
   updatePercentage: (newCurrentZoom: number) => void;
   setWrapperDimensions: () => void;
-  onMediaReady: (
-    mediaRef: React.RefObject<HTMLImageElement | HTMLVideoElement>
-  ) => void;
+  onMediaReady: (mediaRef: React.RefObject<MediaElement>) => void;
+  onDivReady: ({ width, height }: DivArg) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   onWheel: (event: React.WheelEvent<HTMLDivElement>) => void;

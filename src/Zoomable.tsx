@@ -1,7 +1,7 @@
 import React, { FC, useRef, useState, useEffect } from 'react';
 import { useEventListener } from './hooks';
 
-import { ZoomableProvider } from './ZoomableContext';
+import { ZoomableProvider, MediaElement, DivArg } from './ZoomableContext';
 import { fullscreenLookup } from './helper';
 
 const clamp = (value: number, min: number, max: number) =>
@@ -27,7 +27,7 @@ type PointerPosition = {
 const pointers = new Map<number, PointerPosition>();
 let prevDistance = -1;
 const ZOOM_DELTA = 0.5;
-let mediaElement: HTMLImageElement | HTMLVideoElement | undefined;
+let mediaElement: MediaElement | undefined;
 
 export const Zoomable: FC<ZoomableProps> = ({
   id,
@@ -128,8 +128,8 @@ export const Zoomable: FC<ZoomableProps> = ({
   };
 
   const enableFocus = () => {
-    if (enable) {
-      (wrapperRef.current as HTMLDivElement).focus();
+    if (enable && wrapperRef.current) {
+      wrapperRef.current.focus();
     }
   };
 
@@ -216,21 +216,6 @@ export const Zoomable: FC<ZoomableProps> = ({
 
   const calculateCurrentZoom = scaleLinear(0, 100, 1, maxZoom);
 
-  const processImage = () => {
-    const image = mediaElement as HTMLImageElement;
-
-    const { naturalWidth, naturalHeight } = image;
-    const { newWidth, newHeight } = calculateDimensions({
-      mediaWidth: naturalWidth,
-      mediaHeight: naturalHeight,
-    });
-
-    setlastWidth(width);
-    setlastHeight(height);
-    setWidth(newWidth);
-    setHeight(newHeight);
-  };
-
   const checkFullscreen = () => {
     if (fullscreenLookup) {
       return Boolean((document as any)[fullscreenLookup.fullscreenElement]);
@@ -277,6 +262,21 @@ export const Zoomable: FC<ZoomableProps> = ({
     return { newWidth, newHeight };
   };
 
+  const processImage = () => {
+    const image = mediaElement as HTMLImageElement;
+
+    const { naturalWidth, naturalHeight } = image;
+    const { newWidth, newHeight } = calculateDimensions({
+      mediaWidth: naturalWidth,
+      mediaHeight: naturalHeight,
+    });
+
+    setlastWidth(width);
+    setlastHeight(height);
+    setWidth(newWidth);
+    setHeight(newHeight);
+  };
+
   const processVideo = async () => {
     const video = mediaElement as HTMLVideoElement;
     // Safari doesn't handle the video event's onloadedMetadata the same as other browsers
@@ -304,13 +304,32 @@ export const Zoomable: FC<ZoomableProps> = ({
     setPositionY(positionY * heightRatio);
   };
 
-  const onMediaReady = (
-    mediaRef: React.RefObject<HTMLImageElement | HTMLVideoElement>
-  ) => {
-    let media = mediaRef.current as HTMLImageElement | HTMLVideoElement;
-    mediaElement = media;
+  const onMediaReady = (mediaRef: React.RefObject<MediaElement>) => {
+    mediaElement = mediaRef.current as MediaElement;
     processMedia();
   };
+
+  const onDivReady = ({ width, height }: DivArg) => {
+    setlastWidth(width);
+    setlastHeight(height);
+    setWidth(width);
+    setHeight(height);
+  };
+
+  // const processDiv = () => {
+  //   const div = mediaElement as HTMLDivElement;
+  //   const { clientWidth, clientHeight } = div;
+  //   console.log(clientWidth, clientHeight);
+  //   const { newWidth, newHeight } = calculateDimensions({
+  //     mediaWidth: 744,
+  //     mediaHeight: 1052,
+  //   });
+
+  //   setlastWidth(width);
+  //   setlastHeight(height);
+  //   setWidth(newWidth);
+  //   setHeight(newHeight);
+  // };
 
   const processZoom = ({
     delta,
@@ -537,7 +556,7 @@ export const Zoomable: FC<ZoomableProps> = ({
       dh
     );
 
-    imageDataCallbackHandler(canvas.toDataURL('image/png', 1.0));
+    imageDataCallbackHandler(canvas.toDataURL());
   };
 
   return (
@@ -558,6 +577,7 @@ export const Zoomable: FC<ZoomableProps> = ({
         contentRef,
         cropImage,
         onMediaReady,
+        onDivReady,
         zoomIn,
         zoomOut,
         currentZoom,
