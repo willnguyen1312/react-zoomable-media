@@ -1,46 +1,96 @@
-import React, { Component } from 'react';
+import React, { useState, useContext } from 'react';
 import { Document, Page } from 'react-pdf/dist/entry.parcel';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 
 import pdfFile from './sample.pdf';
-import { Zoomable, ZoomableDiv } from '../dist';
+import {
+  Zoomable,
+  ZoomableDiv,
+  zoomableContext,
+  ZoomableContextType,
+} from '../dist';
 
-export default class Sample extends Component {
-  state = {
-    file: pdfFile,
-    numPages: 0,
-    currentPage: 1,
-    pageHeight: 0,
-    pageWidth: 0,
+const PDF = () => {
+  const [file, setFile] = useState<string>(pdfFile);
+  const [numPages, setNumPages] = useState<number>(0);
+  const [currentPage, setCurrrentPage] = useState<number>(1);
+  const [pageWidth, setPageWidth] = useState<number>(0);
+  const [pageHeight, setPageHeight] = useState<number>(0);
+
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(
+      (event.target.files && ((event.target.files[0] as unknown) as string)) ||
+        ''
+    );
   };
 
-  onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      file: event.target.files && event.target.files[0],
-    });
+  const onDocumentLoadSuccess = ({ numPages }: PDFDocumentProxy) => {
+    setNumPages(numPages);
   };
 
-  onDocumentLoadSuccess = ({ numPages }: PDFDocumentProxy) => {
-    this.setState({ numPages });
+  const onPageLoadSuccess = ({ view }: PDFPageProxy) => {
+    setPageWidth(view[2]);
+    setPageHeight(view[3]);
   };
 
-  onPageLoadSuccess = ({ view }: PDFPageProxy) => {
-    this.setState({ pageWidth: view[2], pageHeight: view[3] });
-  };
+  const goPrevPage = () => setCurrrentPage(Math.max(1, currentPage - 1));
 
-  goPrevPage = () =>
-    this.setState({ currentPage: Math.max(1, this.state.currentPage - 1) });
+  const goNextPage = () => setCurrrentPage(Math.min(numPages, currentPage + 1));
 
-  goNextPage = () =>
-    this.setState({
-      currentPage: Math.min(this.state.numPages, this.state.currentPage + 1),
-    });
+  return (
+    <div>
+      <div>
+        <label htmlFor="file">Load from file:</label>
+        <input onChange={onFileChange} type="file" />
+      </div>
+      <div>
+        <span>Current Page: {currentPage}</span>
+        <button onClick={goPrevPage}>Previous Page</button>
+        <button onClick={goNextPage}>Next Page</button>
+        <span>{currentPage === numPages && 'Last page'}</span>
+      </div>
+      <ZoomableDiv
+        render={({ onDivReady }) => {
+          return (
+            <Document
+              loading={''}
+              externalLinkTarget="_blank"
+              file={file}
+              onItemClick={({ pageNumber }) => {
+                setCurrrentPage(Number(pageNumber));
+              }}
+              onLoadSuccess={onDocumentLoadSuccess}
+            >
+              <Page
+                loading={''}
+                onLoadSuccess={arg => {
+                  onPageLoadSuccess(arg);
+                  onDivReady({
+                    width: arg.view[2],
+                    height: arg.view[3],
+                  });
+                }}
+                scale={1}
+                pageNumber={currentPage}
+              />
+            </Document>
+          );
+        }}
+      />
+    </div>
+  );
+};
 
-  render() {
-    const { file, numPages, currentPage, pageWidth, pageHeight } = this.state;
-
-    return (
+const PDFApp = () => {
+  return (
+    <Zoomable
+      enable
+      maxZoom={4}
+      moveStep={50}
+      wheelZoomRatio={0.1}
+      zoomStep={10}
+    >
       <div
         style={{
           display: 'flex',
@@ -50,52 +100,10 @@ export default class Sample extends Component {
           marginTop: 50,
         }}
       >
-        <div>
-          <div>
-            <label htmlFor="file">Load from file:</label>
-            <input onChange={this.onFileChange} type="file" />
-          </div>
-          <div>
-            <span>Current Page: {currentPage}</span>
-            <button onClick={this.goPrevPage}>Previous Page</button>
-            <button onClick={this.goNextPage}>Next Page</button>
-            <span>{currentPage === numPages && 'Last page'}</span>
-          </div>
-          <Zoomable
-            enable
-            maxZoom={4}
-            moveStep={50}
-            wheelZoomRatio={0.1}
-            zoomStep={10}
-          >
-            <ZoomableDiv
-              render={({ onDivReady }) => {
-                return (
-                  <Document
-                    loading={''}
-                    externalLinkTarget="_blank"
-                    file={file}
-                    onLoadSuccess={this.onDocumentLoadSuccess}
-                  >
-                    <Page
-                      loading={''}
-                      onLoadSuccess={arg => {
-                        this.onPageLoadSuccess(arg);
-                        onDivReady({
-                          width: arg.view[2],
-                          height: arg.view[3],
-                        });
-                      }}
-                      scale={1}
-                      pageNumber={currentPage}
-                    />
-                  </Document>
-                );
-              }}
-            />
-          </Zoomable>
-        </div>
+        <PDF />
       </div>
-    );
-  }
-}
+    </Zoomable>
+  );
+};
+
+export default PDFApp;
