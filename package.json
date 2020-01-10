@@ -26,7 +26,6 @@
     "local": "live-server --no-browser --cors local",
     "demo": "cd example && yarn start",
     "build:demo": "cd example && yarn build",
-    "dev": "npm-run-all -p start demo local",
     "deploy": "netlify deploy --prod --dir=./example/dist",
     "publish:demo": "npm-run-all -s build build:demo deploy"
   },
