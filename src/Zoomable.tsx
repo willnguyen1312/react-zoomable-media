@@ -316,21 +316,6 @@ export const Zoomable: FC<ZoomableProps> = ({
     setHeight(height);
   };
 
-  // const processDiv = () => {
-  //   const div = mediaElement as HTMLDivElement;
-  //   const { clientWidth, clientHeight } = div;
-  //   console.log(clientWidth, clientHeight);
-  //   const { newWidth, newHeight } = calculateDimensions({
-  //     mediaWidth: 744,
-  //     mediaHeight: 1052,
-  //   });
-
-  //   setlastWidth(width);
-  //   setlastHeight(height);
-  //   setWidth(newWidth);
-  //   setHeight(newHeight);
-  // };
-
   const processZoom = ({
     delta,
     x,
