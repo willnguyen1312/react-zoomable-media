@@ -46,9 +46,7 @@ const Video = ({
                 width: '100%',
               }}
               ref={videoRef}
-              // src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"
-              // src="http://localhost:8080/trip.mp4"
-              src="/bunny.mp4"
+              src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             />
           );
         }}
