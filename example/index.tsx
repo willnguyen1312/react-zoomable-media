@@ -8,7 +8,9 @@ import Image from './Image';
 import PDF from './PDF';
 
 const App = () => {
-  const [mediaType, setMediaType] = useState<'image' | 'video' | 'pdf'>('pdf');
+  const [mediaType, setMediaType] = useState<'image' | 'video' | 'pdf'>(
+    'image'
+  );
 
   return (
     <>
