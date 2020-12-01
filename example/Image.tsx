@@ -12,12 +12,7 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-// const zoomImageUrl = 'https://picsum.photos/id/1037/5000/800';
-const zoomImageUrl = `https://picsum.photos/id/${getRandomInt(
-  1,
-  1000
-)}/1920/1080`;
-// const zoomImageUrl = 'https://picsum.photos/id/1037/800/5000';
+const zoomImageUrl = `https://source.unsplash.com/random/1920x1080`;
 
 const Image = () => {
   const { cropImage } = useContext(zoomableContext) as ZoomableContextType;
