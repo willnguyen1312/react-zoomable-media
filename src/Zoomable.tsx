@@ -410,21 +410,13 @@ export const Zoomable: FC<ZoomableProps> = ({
     pointers.set(pointerId, { x: pageX, y: pageY });
   };
 
-  const getPointersCenter = () => {
-    let x = 0;
-    let y = 0;
-
-    pointers.forEach(value => {
-      x += value.x;
-      y += value.y;
-    });
-
-    x /= pointers.size;
-    y /= pointers.size;
-
+  const getPointersCenter = (
+    first: PointerPosition,
+    second: PointerPosition
+  ) => {
     return {
-      x,
-      y,
+      x: (first.x + second.x) / 2,
+      y: (first.y + second.y) / 2,
     };
   };
 
@@ -445,7 +437,11 @@ export const Zoomable: FC<ZoomableProps> = ({
         setPositionX(calculatePositionX(lastPositionX + offsetX, currentZoom));
         setPositionY(calculatePositionY(lastPositionY + offsetY, currentZoom));
       }
-      if (pointers.size >= 2) {
+
+      const keys = Array.from(pointers.keys());
+      const isValid = pointerId === keys[0] || pointerId === keys[1];
+
+      if (pointers.size >= 2 && isValid) {
         const pointersIterator = pointers.values();
         const first = pointersIterator.next().value as PointerPosition;
         const second = pointersIterator.next().value as PointerPosition;
@@ -453,7 +449,7 @@ export const Zoomable: FC<ZoomableProps> = ({
           Math.pow(first.x - second.x, 2) + Math.pow(first.y - second.y, 2)
         );
 
-        const { x, y } = getPointersCenter();
+        const { x, y } = getPointersCenter(first, second);
 
         if (prevDistance > 0) {
           if (curDistance > prevDistance) {
