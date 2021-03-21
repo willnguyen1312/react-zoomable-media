@@ -472,9 +472,11 @@ export const Zoomable: FC<ZoomableProps> = ({
     }
   };
 
-  const handlePointerUp = () => {
-    pointers.clear();
-    setIsOnMove(false);
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    pointers.delete(event.pointerId);
+    if (pointers.size === 0) {
+      setIsOnMove(false);
+    }
   };
 
   const getMediaDimensions = () => {
