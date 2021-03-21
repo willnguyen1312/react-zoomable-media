@@ -445,7 +445,7 @@ export const Zoomable: FC<ZoomableProps> = ({
         setPositionX(calculatePositionX(lastPositionX + offsetX, currentZoom));
         setPositionY(calculatePositionY(lastPositionY + offsetY, currentZoom));
       }
-      if (pointers.size === 2) {
+      if (pointers.size >= 2) {
         const pointersIterator = pointers.values();
         const first = pointersIterator.next().value as PointerPosition;
         const second = pointersIterator.next().value as PointerPosition;
