@@ -39,7 +39,6 @@ const Video = ({
         render={({ onMediaReady }) => {
           return (
             <video
-              controls
               crossOrigin="anonymous"
               onLoadedMetadata={() => onMediaReady(videoRef)}
               style={{

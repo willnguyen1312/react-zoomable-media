@@ -11,13 +11,6 @@ yarn start
 yarn demo
 ```
 
-### TODO
-
-- [ ] Document the usage
-- [ ] Add cropping area
-- [ ] Add example code in Codesandbox
-- [x] Add support for DIV element
-
 ## License
 
 [MIT](https://opensource.org/licenses/MIT)
