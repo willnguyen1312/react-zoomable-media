@@ -1,11 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
-  ZoomableVideo,
   Zoomable,
-  zoomableContext,
   ZoomableContextType,
+  ZoomableVideo,
+  zoomableContext,
 } from '../dist';
-import { useContext } from 'react';
 
 const Video = ({
   videoRef,
@@ -46,7 +45,7 @@ const Video = ({
                 width: '100%',
               }}
               ref={videoRef}
-              src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+              src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             />
           );
         }}
